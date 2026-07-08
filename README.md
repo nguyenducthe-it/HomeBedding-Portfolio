@@ -52,9 +52,29 @@ HomeBedding là một ứng dụng web thương mại điện tử hiện đại
    ✅ Connected to MongoDB successfully!
    🚀 Server is running on http://localhost:3000
    ```
-
 5. **Truy cập ứng dụng:**
    Mở trình duyệt và truy cập: [http://localhost:3000](http://localhost:3000)
+
+### Chạy bằng Docker (Khuyến nghị cho Production/Testing nhanh)
+
+Nếu hệ thống của bạn đã cài đặt [Docker Desktop](https://www.docker.com/products/docker-desktop/), bạn có thể khởi chạy toàn bộ môi trường ứng dụng và cơ sở dữ liệu MongoDB chỉ với một câu lệnh:
+
+1. **Chuẩn bị file cấu hình:**
+   Đảm bảo bạn đã có tệp `.env` tại thư mục gốc của dự án (mục 3).
+
+2. **Khởi chạy bằng Docker Compose:**
+   ```bash
+   docker compose up --build
+   ```
+   *Lưu ý: Image được tối ưu cho cả kiến trúc x86 và ARM64 (tiện lợi cho việc deploy lên Oracle Cloud ARM).*
+
+3. **Truy cập:**
+   Mở trình duyệt và truy cập: [http://localhost:3000](http://localhost:3000)
+
+4. **Dừng container:**
+   ```bash
+   docker compose down
+   ```
 
 ## Hình ảnh minh họa dự án (Screenshots)
 

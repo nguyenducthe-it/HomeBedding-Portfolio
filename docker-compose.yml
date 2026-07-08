@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # Override the local MONGO_URI from .env to use the internal docker network service name 'mongo'
+      - MONGO_URI=mongodb://mongo:27017/homebedding_new
+      - PORT=3000
+    depends_on:
+      - mongo
+    volumes:
+      # Persist uploaded media files across container restarts and builds
+      - uploads_data:/app/uploads
+
+  mongo:
+    image: mongo:6
+    restart: unless-stopped
+    volumes:
+      # Persist MongoDB database files
+      - mongo_data:/data/db
+    # Port 27017 is not exposed to the host for security. Only 'app' can access it.
+
+volumes:
+  mongo_data:
+  uploads_data:

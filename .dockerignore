@@ -1,0 +1,30 @@
+# Dependency directories
+node_modules/
+npm-debug.log*
+
+# Environment and secrets
+.env
+*.env
+.git
+.gitignore
+
+# Documentation and project resources
+docs/
+doc/
+README.md
+task.md
+walkthrough.md
+implementation_plan.md
+deploy_guide.md
+
+# Build outputs and temp files
+out/
+dist/
+build/
+temp/
+tmp/
+scratch/
+mongodb_backup/
+*.log
+Thumbs.db
+.DS_Store
