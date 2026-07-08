@@ -1,0 +1,42 @@
+@startuml SequenceQuanLyChamCong
+autonumber
+actor "Quản trị viên" as Admin
+boundary "Giao diện Chấm Công" as AttendanceUI
+control "Điều khiển Chấm Công" as AttendanceCtrl
+database "CSDL" as DB
+
+Admin -> AttendanceUI: Truy cập mục Quản lý chấm công
+activate AttendanceUI
+AttendanceUI -> AttendanceCtrl: Yêu cầu danh sách chấm công & đăng ký ca chờ duyệt
+activate AttendanceCtrl
+AttendanceCtrl -> DB: Lấy dữ liệu chấm công (Attendance) & Đăng ký ca (ShiftRequest status 'pending')
+activate DB
+DB --> AttendanceCtrl: Trả về danh sách chấm công & danh sách yêu cầu đăng ký ca
+deactivate DB
+AttendanceCtrl --> AttendanceUI: Phản hồi danh sách chấm công & yêu cầu đăng ký
+deactivate AttendanceCtrl
+AttendanceUI -> Admin: Hiển thị bảng chấm công của nhân viên & danh sách yêu cầu chờ duyệt
+
+opt Phê duyệt yêu cầu đăng ký ca trực / đổi ca trực
+    Admin -> AttendanceUI: Chọn một yêu cầu đăng ký ca cụ thể
+    Admin -> AttendanceUI: Nhấn nút "Duyệt" (hoặc "Từ chối")
+    AttendanceUI -> AttendanceCtrl: Gửi quyết định phê duyệt (requestId, status: 'approved' hoặc 'rejected')
+    activate AttendanceCtrl
+    AttendanceCtrl -> DB: Cập nhật trạng thái trong tài liệu ShiftRequest
+    activate DB
+    DB --> AttendanceCtrl: Xác nhận cập nhật thành công
+    deactivate DB
+    
+    alt Được phê duyệt (status: 'approved')
+        AttendanceCtrl -> DB: Tự động khởi tạo/cập nhật lịch trực tương ứng trong bảng Attendance
+        activate DB
+        DB --> AttendanceCtrl: Cập nhật Attendance thành công
+        deactivate DB
+    end
+    
+    AttendanceCtrl --> AttendanceUI: Phản hồi 200 (Xử lý yêu cầu thành công)
+    deactivate AttendanceCtrl
+    AttendanceUI -> Admin: Hiển thị Toast thành công & làm mới giao diện chấm công
+end
+deactivate AttendanceUI
+@enduml

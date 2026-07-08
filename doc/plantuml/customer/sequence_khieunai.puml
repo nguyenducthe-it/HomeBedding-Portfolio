@@ -1,0 +1,34 @@
+@startuml SequenceKhieuNai
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Khiếu Nại" as ComplaintUI
+control "Điều khiển Khiếu Nại" as ComplaintCtrl
+database "CSDL" as DB
+
+Customer -> ComplaintUI: Mở mục "Khiếu nại & Phản hồi" (customer.html#complaints)
+activate ComplaintUI
+ComplaintUI -> ComplaintCtrl: Yêu cầu lấy lịch sử khiếu nại cá nhân (GET /api/complaints/my-complaints/:customerId)
+activate ComplaintCtrl
+ComplaintCtrl -> DB: Tìm danh sách khiếu nại của khách hàng (Complaint.find({ customerId }))
+activate DB
+DB --> ComplaintCtrl: Trả về danh sách khiếu nại
+deactivate DB
+ComplaintCtrl --> ComplaintUI: Trả về danh sách khiếu nại cũ kèm đối thoại xử lý
+deactivate ComplaintCtrl
+ComplaintUI --> Customer: Hiển thị lịch sử khiếu nại lên màn hình
+
+Customer -> ComplaintUI: Nhấp nút "Gửi khiếu nại mới"
+ComplaintUI -> Customer: Hiển thị form điền nội dung khiếu nại
+Customer -> ComplaintUI: Chọn loại khiếu nại (Thái độ, Sản phẩm, Thanh toán, Khác) & Nhập mô tả lỗi -> Nhấn "Gửi khiếu nại"
+ComplaintUI -> ComplaintCtrl: Gọi API tạo khiếu nại (POST /api/complaints)
+activate ComplaintCtrl
+ComplaintCtrl -> DB: Tạo bản ghi Complaint mới với status='pending', priority='medium'
+activate DB
+DB --> ComplaintCtrl: Lưu khiếu nại thành công
+deactivate DB
+ComplaintCtrl --> ComplaintUI: Phản hồi 201 (Thêm khiếu nại thành công)
+deactivate ComplaintCtrl
+ComplaintUI -> ComplaintUI: Cập nhật thêm khiếu nại mới vào danh sách hiển thị
+ComplaintUI --> Customer: Hiển thị Toast thông báo gửi khiếu nại thành công, vui lòng chờ xử lý
+deactivate ComplaintUI
+@enduml

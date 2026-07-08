@@ -1,0 +1,40 @@
+@startuml SequenceDangNhap
+autonumber
+actor "Nhân viên" as Staff
+boundary "Giao diện Đăng Nhập" as LoginUI
+control "Điều khiển Đăng Nhập" as LoginCtrl
+database "CSDL" as DB
+
+Staff -> LoginUI: Truy cập trang đăng nhập, nhập Email & Mật khẩu
+activate LoginUI
+LoginUI -> LoginCtrl: Gửi yêu cầu đăng nhập (email, password)
+activate LoginCtrl
+LoginCtrl -> DB: Tìm người dùng theo email
+activate DB
+DB --> LoginCtrl: Trả về thông tin người dùng (User)
+deactivate DB
+
+alt Tài khoản không tồn tại
+    LoginCtrl --> LoginUI: Phản hồi lỗi 400 (Tài khoản không tồn tại)
+    LoginUI -> Staff: Hiển thị Toast thông báo lỗi đăng nhập
+else Tài khoản tồn tại
+    LoginCtrl -> LoginCtrl: So khớp mật khẩu: comparePassword()
+    alt Mật khẩu không khớp
+        LoginCtrl --> LoginUI: Phản hồi lỗi 400 (Mật khẩu không chính xác)
+        LoginUI -> Staff: Hiển thị Toast thông báo sai mật khẩu
+    else Mật khẩu trùng khớp
+        LoginCtrl -> LoginCtrl: Kiểm tra vai trò người dùng (role)
+        alt Vai trò không hợp lệ (Không phải staff hoặc admin)
+            LoginCtrl --> LoginUI: Phản hồi lỗi 403 (Không có quyền truy cập)
+            LoginUI -> Staff: Hiển thị Toast thông báo không có quyền truy cập
+        else Vai trò hợp lệ (staff hoặc admin)
+            LoginCtrl -> LoginCtrl: Tạo mã JWT Token
+            LoginCtrl --> LoginUI: Phản hồi 200 { token, userId, role, fullName }
+            deactivate LoginCtrl
+            LoginUI -> LoginUI: Lưu token & thông tin cá nhân vào LocalStorage
+            LoginUI -> Staff: Điều hướng sang trang quản trị nhân viên (staff.html) và hiển thị Toast thành công
+            deactivate LoginUI
+        end
+    end
+end
+@enduml

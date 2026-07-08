@@ -1,0 +1,22 @@
+@startuml ActivityThemYeuThich
+|Khách hàng|
+start
+:Nhấp chọn biểu tượng trái tim (chưa tô màu);
+|Hệ thống|
+:Gửi yêu cầu toggle yêu thích lên Server;
+:Tìm thông tin người dùng trong CSDL;
+if (Sản phẩm đã có trong wishlist?) then (Có)
+    :Trả về thông tin lỗi (logic đã yêu thích);
+    |Khách hàng|
+    stop
+else (Chưa)
+    |Hệ thống|
+    :Thêm productId vào mảng user.wishlist;
+    :Lưu thay đổi người dùng vào CSDL;
+    :Trả về phản hồi 200 thành công;
+    :Tô màu đỏ cho biểu tượng trái tim;
+    :Hiển thị Toast báo đã thêm vào yêu thích;
+    |Khách hàng|
+    stop
+endif
+@enduml

@@ -1,0 +1,30 @@
+@startuml SequenceThemYeuThich
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Sản Phẩm" as ProductUI
+control "Điều khiển Yêu Thích" as WishlistCtrl
+database "CSDL" as DB
+
+Customer -> ProductUI: Nhấp biểu tượng "Trái tim" (chưa tô màu) của một sản phẩm
+activate ProductUI
+ProductUI -> WishlistCtrl: Gửi yêu cầu cập nhật yêu thích (POST /api/users/wishlist/toggle {userId, productId})
+activate WishlistCtrl
+WishlistCtrl -> DB: Tìm người dùng theo ID (User.findById(userId))
+activate DB
+DB --> WishlistCtrl: Trả về thông tin người dùng
+deactivate DB
+WishlistCtrl -> WishlistCtrl: Kiểm tra xem productId có trong mảng wishlist chưa
+alt Sản phẩm đã có trong wishlist (Lỗi logic)
+    WishlistCtrl --> ProductUI: Trả về lỗi hoặc xóa khỏi wishlist
+else Sản phẩm chưa có trong wishlist
+    WishlistCtrl -> DB: Đẩy productId vào mảng user.wishlist & lưu (user.save())
+    activate DB
+    DB --> WishlistCtrl: Lưu thành công
+    deactivate DB
+    WishlistCtrl --> ProductUI: Phản hồi 200 { message: 'Cập nhật wishlist thành công', wishlist }
+    deactivate WishlistCtrl
+    ProductUI -> ProductUI: Tô màu đỏ biểu tượng "Trái tim" của sản phẩm trên UI
+    ProductUI --> Customer: Hiển thị Toast thông báo đã thêm vào sản phẩm yêu thích
+end
+deactivate ProductUI
+@enduml

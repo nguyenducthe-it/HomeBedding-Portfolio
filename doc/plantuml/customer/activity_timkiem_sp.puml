@@ -1,0 +1,21 @@
+@startuml ActivityTimKiemSP
+|Khách hàng|
+start
+:Truy cập trang sản phẩm (customer.html#products);
+|Hệ thống|
+:Gửi yêu cầu tải tất cả sản phẩm;
+:Truy vấn CSDL lấy danh sách sản phẩm;
+:Hiển thị danh sách sản phẩm ban đầu;
+|Khách hàng|
+:Nhập từ khóa và chọn danh mục;
+|Hệ thống|
+:Gọi API tìm kiếm sản phẩm với tham số;
+:Truy vấn CSDL theo điều kiện tìm kiếm;
+if (Danh sách sản phẩm rỗng?) then (Có)
+    :Hiển thị thông báo "Không tìm thấy sản phẩm phù hợp";
+else (Không)
+    :Render danh sách sản phẩm tìm được lên màn hình;
+endif
+|Khách hàng|
+stop
+@enduml

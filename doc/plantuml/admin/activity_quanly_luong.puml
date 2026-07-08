@@ -1,0 +1,48 @@
+@startuml ActivityQuanLyLuong
+|Quản trị viên|
+start
+:Truy cập trang Quản lý lương;
+:Chọn Tháng và Năm cần thống kê;
+|Hệ thống|
+:Gửi yêu cầu tải bảng lương toàn bộ nhân viên;
+:Truy vấn danh sách nhân viên có vai trò 'staff' từ CSDL;
+:Truy vấn lịch sử chấm công của toàn bộ nhân viên trong tháng từ CSDL;
+:Tính toán lương thực nhận của từng nhân viên dựa trên số ca trực;
+:Trả về danh sách bảng lương chi tiết;
+:Hiển thị bảng lương tổng hợp của toàn bộ nhân viên;
+|Quản trị viên|
+if (Chọn hành động quản lý?) then (Thay đổi lương cơ bản)
+    :Chọn nhân viên cần thay đổi;
+    :Nhập mức lương cơ bản mới;
+    :Nhấn nút "Cập Nhật Lương Cơ Bản";
+    |Hệ thống|
+    :Gửi yêu cầu cập nhật lên Server;
+    if (Lương cơ bản mới nhỏ hơn 0?) then (Có)
+        :Trả về lỗi giá trị không hợp lệ (400);
+        :Hiển thị Toast báo lỗi;
+        |Quản trị viên|
+        stop
+    else (Không)
+        |Hệ thống|
+        :Cập nhật baseSalary của nhân viên vào bảng User trong CSDL;
+        :Tính toán lại lương của nhân viên theo giá trị mới;
+        :Trả về phản hồi cập nhật thành công (200);
+        :Cập nhật bảng hiển thị và hiển thị Toast thành công;
+        |Quản trị viên|
+        stop
+    endif
+elseif (Thanh toán lương) then (Có)
+    |Quản trị viên|
+    :Chọn danh sách nhân viên cần thanh toán lương;
+    :Nhấn nút "Thanh Toán Lương";
+    |Hệ thống|
+    :Gửi yêu cầu thanh toán lương lên Server;
+    :Ghi nhận lịch sử chi lương trong CSDL;
+    :Trả về phản hồi thanh toán thành công (200);
+    :Cập nhật trạng thái bảng lương thành "Đã thanh toán" và hiển thị Toast thành công;
+    |Quản trị viên|
+    stop
+else (Chỉ xem bảng lương)
+    stop
+endif
+@enduml

@@ -1,0 +1,42 @@
+@startuml ActivityProfile
+|Khách hàng|
+start
+:Truy cập trang Cá Nhân;
+|Hệ thống|
+:Gửi yêu cầu lấy thông tin cá nhân lên Server;
+:Truy vấn thông tin tài khoản khách hàng từ bảng User trong CSDL;
+:Trả về dữ liệu tài khoản và sổ địa chỉ;
+:Hiển thị thông tin cá nhân & danh sách địa chỉ giao hàng;
+|Khách hàng|
+if (Chọn thao tác muốn thực hiện?) then (Cập nhật thông tin cơ bản)
+    :Chỉnh sửa thông tin cá nhân (Họ tên, Số điện thoại, Ngày sinh, Giới tính);
+    :Nhấn nút "Lưu Hồ Sơ";
+    |Hệ thống|
+    :Gửi yêu cầu lưu thông tin lên Server;
+    if (Họ tên hoặc Số điện thoại trống?) then (Có)
+        :Trả về lỗi dữ liệu không hợp lệ (400);
+        :Hiển thị Toast báo lỗi;
+        |Khách hàng|
+        stop
+    else (Không)
+        |Hệ thống|
+        :Cập nhật các trường dữ liệu vào bảng User trong CSDL;
+        :Trả về phản hồi cập nhật thành công (200);
+        :Cập nhật giao diện và hiển thị Toast thành công;
+        |Khách hàng|
+        stop
+    endif
+else (Thêm địa chỉ giao hàng mới)
+    |Khách hàng|
+    :Nhấn chọn nút "Thêm Địa Chỉ Mới";
+    :Nhập thông tin địa chỉ mới (Họ tên người nhận, SĐT, Tỉnh/TP, Quận/Huyện, Xã/Phường, Chi tiết);
+    :Nhấn nút "Lưu Địa Chỉ";
+    |Hệ thống|
+    :Gửi thông tin địa chỉ mới lên Server;
+    :Thêm (push) địa chỉ mới vào mảng addresses của User trong CSDL;
+    :Trả về phản hồi thêm thành công (200);
+    :Cập nhật lại danh sách địa chỉ và hiển thị Toast thành công;
+    |Khách hàng|
+    stop
+endif
+@enduml

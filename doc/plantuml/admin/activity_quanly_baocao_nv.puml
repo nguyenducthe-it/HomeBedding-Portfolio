@@ -1,0 +1,37 @@
+@startuml ActivityQuanLyBaoCaoNV
+|Quản trị viên|
+start
+:Truy cập mục Quản lý báo cáo nhân viên;
+|Hệ thống|
+:Gửi yêu cầu tải danh sách phản hồi nội bộ lên Server;
+:Truy vấn danh sách phản hồi từ bảng StaffFeedback trong CSDL;
+:Trả về danh sách phản hồi;
+:Hiển thị danh sách báo cáo nhân viên trên giao diện quản trị;
+|Quản trị viên|
+:Chọn một báo cáo cụ thể từ danh sách;
+|Hệ thống|
+:Tải lịch sử đối thoại báo cáo trợ giúp từ CSDL;
+:Hiển thị chi tiết báo cáo và khung phản hồi nội bộ;
+|Quản trị viên|
+if (Chọn hành động xử lý?) then (Gửi phản hồi chỉ đạo)
+    :Nhập tin nhắn phản hồi nhân viên;
+    :Nhấn nút "Gửi Phản Hồi";
+    |Hệ thống|
+    :Gửi tin nhắn phản hồi lên Server;
+    :Đẩy tin nhắn mới vào mảng messages của StaffFeedback trong CSDL;
+    :Trả về phản hồi thành công (200);
+    :Cập nhật khung đối thoại hiển thị tin nhắn mới;
+    |Quản trị viên|
+    stop
+else (Cập nhật trạng thái)
+    :Chọn trạng thái mới (Đang xử lý / Đã giải quyết);
+    :Nhấn nút "Cập Nhật Trạng Thái";
+    |Hệ thống|
+    :Gửi yêu cầu cập nhật trạng thái lên Server;
+    :Cập nhật status của StaffFeedback trong CSDL;
+    :Trả về phản hồi cập nhật thành công (200);
+    :Làm mới danh sách báo cáo nhân viên và hiển thị Toast thành công;
+    |Quản trị viên|
+    stop
+endif
+@enduml

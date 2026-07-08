@@ -1,0 +1,31 @@
+@startuml SequenceBoYeuThich
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Sản Phẩm Yêu Thích" as WishlistUI
+control "Điều khiển Yêu Thích" as WishlistCtrl
+database "CSDL" as DB
+
+Customer -> WishlistUI: Mở danh sách sản phẩm yêu thích (customer.html#wishlist)
+activate WishlistUI
+Customer -> WishlistUI: Nhấp chọn biểu tượng "Trái tim" (đang tô đỏ) để bỏ yêu thích
+WishlistUI -> WishlistCtrl: Gửi yêu cầu cập nhật yêu thích (POST /api/users/wishlist/toggle {userId, productId})
+activate WishlistCtrl
+WishlistCtrl -> DB: Tìm người dùng theo ID (User.findById(userId))
+activate DB
+DB --> WishlistCtrl: Trả về thông tin người dùng
+deactivate DB
+WishlistCtrl -> WishlistCtrl: Tìm vị trí của productId trong mảng user.wishlist
+alt Sản phẩm không có trong wishlist (Lỗi logic)
+    WishlistCtrl --> WishlistUI: Trả về trạng thái lỗi
+else Sản phẩm tồn tại trong wishlist
+    WishlistCtrl -> DB: Xóa productId khỏi mảng user.wishlist & lưu (user.save())
+    activate DB
+    DB --> WishlistCtrl: Lưu thành công
+    deactivate DB
+    WishlistCtrl --> WishlistUI: Phản hồi 200 { message: 'Cập nhật wishlist thành công', wishlist }
+    deactivate WishlistCtrl
+    WishlistUI -> WishlistUI: Xóa sản phẩm đó khỏi danh sách hiển thị trên giao diện
+    WishlistUI --> Customer: Hiển thị Toast thông báo đã bỏ sản phẩm yêu thích
+end
+deactivate WishlistUI
+@enduml

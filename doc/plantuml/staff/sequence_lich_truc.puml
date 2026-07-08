@@ -1,0 +1,44 @@
+@startuml SequenceLichTruc
+autonumber
+actor "Nhân viên" as Staff
+boundary "Giao diện Lịch Trực" as ShiftUI
+control "Điều khiển Lịch Trực" as ShiftCtrl
+database "CSDL" as DB
+
+Staff -> ShiftUI: Truy cập trang quản lý lịch trực
+activate ShiftUI
+ShiftUI -> ShiftCtrl: Yêu cầu lấy danh sách lịch trực (userId, weekStartDate)
+activate ShiftCtrl
+ShiftCtrl -> DB: Lấy dữ liệu điểm danh (Attendance) & Đăng ký ca trực (ShiftRequest)
+activate DB
+DB --> ShiftCtrl: Trả về danh sách lịch trực & trạng thái đăng ký ca
+deactivate DB
+ShiftCtrl --> ShiftUI: Phản hồi danh sách lịch trực
+deactivate ShiftCtrl
+ShiftUI -> Staff: Hiển thị lịch trực trên bảng điều khiển
+
+opt Đăng ký ca trực mới / Yêu cầu đổi ca trực
+    Staff -> ShiftUI: Chọn các ca trực (morning/afternoon/evening) cho tuần tới
+    Staff -> ShiftUI: Nhấn nút "Đăng Ký Ca Trực"
+    ShiftUI -> ShiftCtrl: Gửi yêu cầu đăng ký ca (userId, weekStartDate, requestedShifts)
+    activate ShiftCtrl
+    ShiftCtrl -> DB: Tìm kiếm đăng ký trùng lặp hoặc đã duyệt
+    activate DB
+    DB --> ShiftCtrl: Trả về kết quả kiểm tra
+    deactivate DB
+    
+    alt Đã tồn tại đăng ký được duyệt
+        ShiftCtrl --> ShiftUI: Phản hồi lỗi 400 (Lịch trực tuần này đã được duyệt, không thể thay đổi)
+        ShiftUI -> Staff: Hiển thị Toast thông báo lỗi đăng ký
+    else Chưa đăng ký hoặc ở trạng thái chờ duyệt
+        ShiftCtrl -> DB: Lưu/Cập nhật yêu cầu vào bảng ShiftRequest
+        activate DB
+        DB --> ShiftCtrl: Xác nhận lưu thành công
+        deactivate DB
+        ShiftCtrl --> ShiftUI: Phản hồi 200 (Đăng ký ca trực thành công)
+        deactivate ShiftCtrl
+        ShiftUI -> Staff: Hiển thị Toast thông báo đăng ký thành công & cập nhật trạng thái lịch trực
+    end
+end
+deactivate ShiftUI
+@enduml

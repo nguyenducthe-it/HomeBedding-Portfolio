@@ -1,0 +1,45 @@
+@startuml SequenceXemChiTietSP
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Sản Phẩm" as ProductUI
+boundary "Giao diện Chi Tiết Sản Phẩm (Modal/Detail)" as DetailUI
+control "Điều khiển Sản Phẩm" as ProductCtrl
+control "Điều khiển Đánh Giá" as ReviewCtrl
+database "CSDL" as DB
+
+Customer -> ProductUI: Nhấp chọn một sản phẩm cụ thể
+activate ProductUI
+ProductUI -> DetailUI: Mở giao diện hiển thị chi tiết sản phẩm
+activate DetailUI
+DetailUI -> ProductCtrl: Gửi yêu cầu lấy chi tiết sản phẩm theo ID (GET /api/products/:id)
+activate ProductCtrl
+ProductCtrl -> DB: Tìm sản phẩm bằng ID
+activate DB
+DB --> ProductCtrl: Trả về thông tin chi tiết sản phẩm
+deactivate DB
+ProductCtrl --> DetailUI: Trả về chi tiết sản phẩm
+deactivate ProductCtrl
+
+DetailUI -> ProductCtrl: Gửi yêu cầu lấy sản phẩm liên quan (GET /api/products/related/:id)
+activate ProductCtrl
+ProductCtrl -> DB: Tìm sản phẩm cùng danh mục loại trừ sản phẩm hiện tại
+activate DB
+DB --> ProductCtrl: Trả về danh sách sản phẩm liên quan
+deactivate DB
+ProductCtrl --> DetailUI: Trả về danh sách liên quan
+deactivate ProductCtrl
+
+DetailUI -> ReviewCtrl: Gửi yêu cầu lấy đánh giá sản phẩm (GET /api/reviews/product/:productId)
+activate ReviewCtrl
+ReviewCtrl -> DB: Tìm tất cả đánh giá của sản phẩm này
+activate DB
+DB --> ReviewCtrl: Trả về mảng đánh giá
+deactivate DB
+ReviewCtrl --> DetailUI: Trả về danh sách đánh giá của sản phẩm
+deactivate ReviewCtrl
+
+DetailUI -> DetailUI: Render thông tin sản phẩm, ảnh gallery, điểm đánh giá, bình luận và danh sách liên quan
+DetailUI --> Customer: Hiển thị giao diện chi tiết sản phẩm đầy đủ thông tin
+deactivate DetailUI
+deactivate ProductUI
+@enduml

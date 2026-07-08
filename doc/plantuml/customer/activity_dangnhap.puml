@@ -1,0 +1,39 @@
+@startuml ActivityDangNhap
+|Khách hàng|
+start
+:Truy cập trang chủ;
+:Nhấp chọn nút "Đăng Nhập";
+|Hệ thống|
+:Hiển thị form Đăng nhập (Modal);
+|Khách hàng|
+:Nhập Email và Mật khẩu;
+:Nhấn nút "Đăng Nhập";
+|Hệ thống|
+:Gửi yêu cầu đăng nhập lên Server;
+:Tìm kiếm tài khoản trong CSDL;
+if (Tìm thấy tài khoản?) then (Không)
+    :Trả về lỗi tài khoản không tồn tại (400);
+    :Hiển thị Toast báo lỗi đăng nhập;
+    |Khách hàng|
+    stop
+else (Có)
+    |Hệ thống|
+    :So khớp mật khẩu bằng bcrypt;
+    if (Mật khẩu trùng khớp?) then (Không)
+        :Trả về lỗi mật khẩu sai (400);
+        :Hiển thị Toast báo sai mật khẩu;
+        |Khách hàng|
+        stop
+    else (Có)
+        |Hệ thống|
+        :Tạo JWT Token;
+        :Trả về Token và thông tin user (200);
+        :Lưu Token vào LocalStorage;
+        :Đóng Modal Đăng nhập, cập nhật Header;
+        :Điều hướng sang giao diện Khách hàng;
+        :Hiển thị thông báo đăng nhập thành công;
+        |Khách hàng|
+        stop
+    endif
+endif
+@enduml

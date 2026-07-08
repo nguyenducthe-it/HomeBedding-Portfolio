@@ -1,0 +1,68 @@
+@startuml SequenceDatHang
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Giỏ hàng" as CartUI
+boundary "Giao diện Thanh toán" as CheckoutUI
+control "Điều khiển Đơn hàng" as OrderCtrl
+database "CSDL" as DB
+
+Customer -> CartUI: Nhấp nút "Thanh toán đơn hàng"
+activate CartUI
+CartUI -> CheckoutUI: Chuyển sang giao diện điền thông tin đặt hàng
+activate CheckoutUI
+CheckoutUI -> Customer: Yêu cầu điền địa chỉ giao hàng, phương thức thanh toán, ghi chú và mã giảm giá (nếu có)
+deactivate CartUI
+
+Customer -> CheckoutUI: Chọn địa chỉ giao hàng (hoặc nhập địa chỉ mới) và nhấn "Đặt hàng"
+CheckoutUI -> OrderCtrl: Gọi API đặt hàng (POST /api/orders/place)
+activate OrderCtrl
+
+loop Duyệt qua từng sản phẩm trong đơn đặt hàng
+    OrderCtrl -> DB: Truy vấn kiểm tra thông tin và số lượng tồn kho
+    activate DB
+    DB --> OrderCtrl: Trả về thông tin sản phẩm và số lượng tồn kho hiện tại
+    deactivate DB
+    alt Số lượng tồn kho nhỏ hơn số lượng đặt mua
+        OrderCtrl --> CheckoutUI: Phản hồi 400 (Sản phẩm không đủ số lượng trong kho)
+        CheckoutUI -> Customer: Hiển thị Toast thông báo lỗi sản phẩm X không đủ hàng
+    end
+end
+
+alt Có áp dụng mã giảm giá (promotionCode)
+    OrderCtrl -> DB: Tìm kiếm mã giảm giá (Promotion.findOne({ code, isActive: true }))
+    activate DB
+    DB --> OrderCtrl: Trả về thông tin mã giảm giá
+    deactivate DB
+    alt Mã không hợp lệ hoặc đã hết lượt sử dụng / hết hạn
+        OrderCtrl --> CheckoutUI: Phản hồi 400 (Mã không hợp lệ hoặc đã hết lượt)
+        CheckoutUI -> Customer: Hiển thị Toast thông báo lỗi mã giảm giá
+    else Mã hợp lệ
+        OrderCtrl -> OrderCtrl: Tính toán số tiền được giảm giá (discountAmount)
+        OrderCtrl -> DB: Cập nhật giảm số lượng mã sử dụng (promo.quantity -= 1)
+        activate DB
+        DB --> OrderCtrl: Cập nhật mã giảm giá thành công
+        deactivate DB
+    end
+end
+
+OrderCtrl -> OrderCtrl: Tính tổng tiền hàng & số tiền thực trả (finalAmount)
+OrderCtrl -> DB: Tạo và lưu đơn hàng mới (Order.save(), status='pending')
+activate DB
+DB --> OrderCtrl: Lưu đơn hàng thành công
+deactivate DB
+
+loop Cập nhật lại tồn kho sản phẩm trong CSDL
+    OrderCtrl -> DB: Trừ số lượng tồn kho sản phẩm tương ứng
+end
+
+OrderCtrl -> DB: Tìm giỏ hàng của user và xóa các sản phẩm đã đặt
+activate DB
+DB --> OrderCtrl: Cập nhật giỏ hàng thành công
+deactivate DB
+
+OrderCtrl --> CheckoutUI: Phản hồi 201 (Đặt hàng thành công kèm thông tin đơn)
+deactivate OrderCtrl
+CheckoutUI -> CheckoutUI: Xóa giỏ hàng hiển thị local
+CheckoutUI -> Customer: Hiển thị Toast đặt hàng thành công & điều hướng về Lịch sử đơn hàng
+deactivate CheckoutUI
+@enduml

@@ -1,0 +1,34 @@
+@startuml ActivityDanhGiaSP
+|Khách hàng|
+start
+:Nhấn nút "Viết đánh giá" trên đơn hàng completed;
+|Hệ thống|
+:Mở Modal Đánh giá sản phẩm;
+|Khách hàng|
+:Chọn số sao, viết bình luận, chọn ảnh đính kèm (nếu có);
+:Nhấn nút "Gửi";
+|Hệ thống|
+if (Có chọn tải ảnh?) then (Có)
+    :Tải hình ảnh lên thư mục upload trên Server;
+    :Nhận đường dẫn ảnh trả về;
+else (Không)
+endif
+:Gửi yêu cầu lưu đánh giá lên Server;
+:Kiểm tra trùng lặp đánh giá trong CSDL;
+if (Đã có đánh giá cũ?) then (Có)
+    :Trả về lỗi 400;
+    :Hiển thị Toast báo lỗi đánh giá trùng;
+    |Khách hàng|
+    stop
+else (Chưa)
+    |Hệ thống|
+    :Tạo và lưu bản ghi Đánh giá mới;
+    :Tính toán lại điểm rating trung bình của sản phẩm;
+    :Cập nhật averageRating và reviewCount trong CSDL;
+    :Trả về phản hồi 201 thành công;
+    :Đóng Modal Đánh giá;
+    :Hiển thị Toast gửi đánh giá thành công;
+    |Khách hàng|
+    stop
+endif
+@enduml

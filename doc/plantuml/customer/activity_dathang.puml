@@ -1,0 +1,43 @@
+@startuml ActivityDatHang
+|Khách hàng|
+start
+:Nhấn nút "Thanh toán đơn hàng" tại Giỏ hàng;
+|Hệ thống|
+:Chuyển sang giao diện Thanh toán (Checkout);
+|Khách hàng|
+:Điền thông tin nhận hàng, phương thức thanh toán, mã coupon;
+:Nhấn nút "Đặt hàng";
+|Hệ thống|
+:Gửi yêu cầu đặt hàng lên Server;
+:Kiểm tra tồn kho từng sản phẩm trong CSDL;
+if (Đủ tồn kho?) then (Không)
+    :Trả về lỗi 400 (Sản phẩm không đủ hàng);
+    :Hiển thị Toast báo lỗi thiếu hàng;
+    |Khách hàng|
+    stop
+else (Có)
+    |Hệ thống|
+    if (Có nhập mã giảm giá?) then (Có)
+        :Kiểm tra tính hợp lệ và hạn dùng của mã;
+        if (Mã hợp lệ?) then (Có)
+            :Tính tiền giảm giá & Trừ 1 lượt của mã trong CSDL;
+        else (Không)
+            :Trả về lỗi 400 (Mã không hợp lệ);
+            :Hiển thị Toast thông báo lỗi mã giảm giá;
+            |Khách hàng|
+            stop
+        endif
+    else (Không)
+    endif
+    |Hệ thống|
+    :Tính tổng tiền và số tiền thực trả;
+    :Tạo đơn hàng mới (status='pending') trong CSDL;
+    :Cập nhật giảm tồn kho sản phẩm trong CSDL;
+    :Xóa các mặt hàng vừa đặt khỏi giỏ hàng trong CSDL;
+    :Trả về phản hồi 201 thành công;
+    :Xóa giỏ hàng hiển thị local;
+    :Hiển thị Toast thành công & điều hướng sang Lịch sử đơn;
+    |Khách hàng|
+    stop
+endif
+@enduml

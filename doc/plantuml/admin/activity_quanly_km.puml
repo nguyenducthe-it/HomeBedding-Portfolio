@@ -1,0 +1,61 @@
+@startuml ActivityQuanLyKM
+|Quản trị viên|
+start
+:Truy cập trang Quản lý khuyến mãi;
+|Hệ thống|
+:Tải danh sách mã khuyến mãi hiện tại;
+:Hiển thị danh sách khuyến mãi;
+|Quản trị viên|
+if (Chọn thao tác CRUD?) then (Tạo khuyến mãi mới)
+    :Nhấn nút "Tạo Khuyến Mãi";
+    :Nhập thông tin (Tên chương trình, Mã Code, Số tiền giảm, Số lượng phát hành);
+    :Nhấn nút "Lưu";
+    |Hệ thống|
+    :Gửi dữ liệu khuyến mãi mới lên Server;
+    if (Mã Code hoặc Tên trống?) then (Có)
+        :Trả về lỗi dữ liệu không hợp lệ (400);
+        :Hiển thị Toast báo lỗi;
+        |Quản trị viên|
+        stop
+    else (Không)
+        |Hệ thống|
+        :Lưu tài liệu khuyến mãi mới vào CSDL;
+        :Trả về phản hồi tạo thành công (201);
+        :Làm mới danh sách khuyến mãi và hiển thị Toast thành công;
+        |Quản trị viên|
+        stop
+    endif
+elseif (Sửa khuyến mãi) then (Có)
+    |Quản trị viên|
+    :Chọn mã khuyến mãi cần sửa;
+    :Thay đổi thông tin (Số lượng, Trạng thái kích hoạt...);
+    :Nhấn nút "Cập Nhật";
+    |Hệ thống|
+    :Gửi yêu cầu cập nhật lên Server;
+    :Cập nhật tài liệu khuyến mãi tương ứng trong CSDL;
+    :Trả về phản hồi cập nhật thành công (200);
+    :Làm mới danh sách khuyến mãi và hiển thị Toast thành công;
+    |Quản trị viên|
+    stop
+elseif (Xóa khuyến mãi) then (Có)
+    |Quản trị viên|
+    :Chọn mã khuyến mãi cần xóa;
+    :Nhấn nút "Xóa";
+    :Xác nhận "Đồng ý xóa";
+    |Hệ thống|
+    :Gửi yêu cầu xóa lên Server;
+    :Xóa bản ghi khuyến mãi khỏi CSDL;
+    :Trả về phản hồi xóa thành công (200);
+    :Cập nhật danh sách hiển thị và hiển thị Toast thành công;
+    |Quản trị viên|
+    stop
+else (Chỉ tìm kiếm/Xem danh sách)
+    |Quản trị viên|
+    :Nhập từ khóa tìm kiếm mã khuyến mãi;
+    |Hệ thống|
+    :Truy vấn danh sách khuyến mãi khớp từ khóa;
+    :Hiển thị danh sách khuyến mãi tương ứng lên màn hình;
+    |Quản trị viên|
+    stop
+endif
+@enduml

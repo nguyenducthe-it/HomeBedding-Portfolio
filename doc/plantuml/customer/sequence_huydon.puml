@@ -1,0 +1,44 @@
+@startuml SequenceHuyDon
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Lịch Sử Đơn Hàng" as OrdersUI
+control "Điều khiển Đơn hàng" as OrderCtrl
+database "CSDL" as DB
+
+Customer -> OrdersUI: Truy cập trang Lịch sử đơn hàng (customer.html#orders)
+activate OrdersUI
+Customer -> OrdersUI: Nhấp chọn nút "Hủy đơn" trên một đơn hàng đang chờ xác nhận (pending)
+OrdersUI -> OrdersUI: Hiển thị Custom Dialog xác nhận hủy đơn
+alt Chọn "Hủy"
+    OrdersUI --> Customer: Đóng hộp thoại xác nhận, giữ nguyên đơn hàng
+else Chọn "Đồng ý"
+    OrdersUI -> OrderCtrl: Gọi API hủy đơn hàng: PUT /api/orders/:orderId/cancel
+    activate OrderCtrl
+    OrderCtrl -> DB: Tìm đơn hàng theo ID (Order.findById(orderId))
+    activate DB
+    DB --> OrderCtrl: Trả về thông tin đơn hàng
+    deactivate DB
+    alt Không tìm thấy đơn hàng
+        OrderCtrl --> OrdersUI: Phản hồi 404 (Không tìm thấy đơn hàng)
+        OrdersUI -> Customer: Hiển thị Toast thông báo lỗi
+    else Tìm thấy đơn hàng
+        alt Trạng thái đơn hàng khác 'pending'
+            OrderCtrl --> OrdersUI: Phản hồi 400 (Chỉ có thể hủy đơn hàng đang chờ xác nhận)
+            OrdersUI -> Customer: Hiển thị Toast báo lỗi không thể hủy đơn
+        else Trạng thái đơn hàng là 'pending'
+            loop Hoàn lại tồn kho cho từng sản phẩm trong đơn hàng
+                OrderCtrl -> DB: Cộng lại số lượng tồn kho sản phẩm (quantity + item.quantity)
+            end
+            OrderCtrl -> DB: Cập nhật status='cancelled', cancelledBy='Khách hàng', cancelledAt=now
+            activate DB
+            DB --> OrderCtrl: Lưu đơn hàng thành công
+            deactivate DB
+            OrderCtrl --> OrdersUI: Phản hồi 200 kèm đơn hàng đã cập nhật
+            deactivate OrderCtrl
+            OrdersUI -> OrdersUI: Render lại danh sách đơn hàng và trạng thái mới trên UI
+            OrdersUI --> Customer: Hiển thị Toast thông báo hủy đơn hàng thành công
+        end
+    end
+end
+deactivate OrdersUI
+@enduml

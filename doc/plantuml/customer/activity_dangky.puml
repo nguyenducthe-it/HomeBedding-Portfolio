@@ -1,0 +1,36 @@
+@startuml ActivityDangKy
+|Khách hàng|
+start
+:Truy cập trang chủ;
+:Nhấp chọn nút "Đăng Ký";
+|Hệ thống|
+:Hiển thị form đăng ký (Modal);
+|Khách hàng|
+:Nhập Họ tên, Email, SĐT, Mật khẩu;
+:Nhấn nút "Đăng Ký";
+|Hệ thống|
+if (Validate dữ liệu ở Client?) then (Không hợp lệ)
+    :Hiển thị thông báo lỗi định dạng;
+    |Khách hàng|
+    stop
+else (Hợp lệ)
+    |Hệ thống|
+    :Gửi yêu cầu đăng ký lên Server;
+    :Kiểm tra trùng lặp Email/SĐT;
+    if (Tài khoản đã tồn tại?) then (Có)
+        :Trả về lỗi trùng lặp (400);
+        :Hiển thị Toast báo lỗi tài khoản đã tồn tại;
+        |Khách hàng|
+        stop
+    else (Không)
+        |Hệ thống|
+        :Mã hóa mật khẩu;
+        :Lưu tài khoản mới vào CSDL;
+        :Trả về phản hồi đăng ký thành công (201);
+        :Đóng modal Đăng ký, hiển thị modal Đăng nhập;
+        :Hiển thị thông báo đăng ký thành công;
+        |Khách hàng|
+        stop
+    endif
+endif
+@enduml

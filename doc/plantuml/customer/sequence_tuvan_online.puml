@@ -1,0 +1,53 @@
+@startuml SequenceTuVanOnline
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Tư vấn (Chat Panel)" as ChatUI
+control "Điều khiển Tư vấn" as ConsultationCtrl
+database "CSDL" as DB
+control "Thư mục Uploads" as Disk
+
+Customer -> ChatUI: Mở hộp thoại chat hỗ trợ trực tuyến
+activate ChatUI
+ChatUI -> ConsultationCtrl: Yêu cầu tải lịch sử chat cũ (GET /api/consultations)
+activate ConsultationCtrl
+ConsultationCtrl -> DB: Tìm phiên chat đang mở hoặc mới nhất của người dùng
+activate DB
+DB --> ConsultationCtrl: Trả về lịch sử phiên chat (mảng tin nhắn)
+deactivate DB
+ConsultationCtrl --> ChatUI: Trả về mảng các tin nhắn cũ
+deactivate ConsultationCtrl
+ChatUI --> Customer: Render tin nhắn cũ lên khung chat
+
+Customer -> ChatUI: Nhập tin nhắn mới, có thể đính kèm ảnh hoặc thông tin đơn hàng -> Nhấn "Gửi"
+alt Có chọn tệp ảnh đính kèm
+    ChatUI -> ConsultationCtrl: Tải ảnh đính kèm lên server (POST /api/products/upload)
+    activate ConsultationCtrl
+    ConsultationCtrl -> Disk: Lưu tệp ảnh vào thư mục upload
+    Disk --> ConsultationCtrl: Lưu thành công, trả về tên file
+    ConsultationCtrl --> ChatUI: Trả về đường dẫn ảnh
+    deactivate ConsultationCtrl
+end
+
+ChatUI -> ConsultationCtrl: Gửi tin nhắn mới (POST /api/consultations)
+activate ConsultationCtrl
+ConsultationCtrl -> DB: Tìm bản ghi Consultation của user có status='open'
+activate DB
+DB --> ConsultationCtrl: Trả về bản ghi (hoặc null nếu chưa có)
+deactivate DB
+alt Chưa có phiên chat nào đang mở ('open')
+    ConsultationCtrl -> DB: Tạo bản ghi Consultation mới với status='open'
+    activate DB
+    DB --> ConsultationCtrl: Đã tạo bản ghi
+    deactivate DB
+end
+
+ConsultationCtrl -> DB: Đẩy tin nhắn mới của khách hàng vào mảng messages
+activate DB
+DB --> ConsultationCtrl: Lưu thành công
+deactivate DB
+ConsultationCtrl --> ChatUI: Phản hồi 200 kèm tin nhắn mới tạo
+deactivate ConsultationCtrl
+ChatUI -> ChatUI: Render tin nhắn mới lên giao diện chat\nCuộn xuống cuối khung chat
+ChatUI --> Customer: Hoàn thành gửi tin nhắn
+deactivate ChatUI
+@enduml

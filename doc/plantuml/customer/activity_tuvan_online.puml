@@ -1,0 +1,30 @@
+@startuml ActivityTuVanOnline
+|Khách hàng|
+start
+:Mở khung chat trực tuyến;
+|Hệ thống|
+:Gọi API lấy lịch sử tin nhắn cũ;
+:Truy vấn CSDL tìm phiên chat của người dùng;
+:Render lịch sử tin nhắn lên khung chat;
+|Khách hàng|
+:Nhập tin nhắn mới, có thể chọn tệp đính kèm;
+:Nhấn nút Gửi;
+|Hệ thống|
+if (Có tệp đính kèm?) then (Có)
+    :Tải tệp ảnh lên Server;
+    :Nhận đường dẫn ảnh trả về;
+else (Không)
+endif
+:Gửi tin nhắn mới lên Server;
+:Tìm phiên chat đang mở (open) của người dùng;
+if (Đã có phiên chat open?) then (Chưa)
+    :Khởi tạo phiên chat Consultation mới;
+else (Đã có)
+endif
+:Lưu tin nhắn mới vào mảng messages trong CSDL;
+:Trả về phản hồi 200 thành công;
+:Render tin nhắn mới lên màn hình chat;
+:Cuộn khung chat xuống dưới cùng;
+|Khách hàng|
+stop
+@enduml

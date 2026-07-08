@@ -1,0 +1,19 @@
+@startuml ActivityXemChiTietSP
+|Khách hàng|
+start
+:Nhấp chọn một sản phẩm cụ thể;
+|Hệ thống|
+:Mở giao diện chi tiết sản phẩm;
+:Gọi đồng thời 3 APIs lấy thông tin;
+fork
+    :Lấy thông tin chi tiết sản phẩm từ CSDL;
+fork again
+    :Lấy danh sách sản phẩm liên quan cùng danh mục;
+fork again
+    :Lấy danh sách đánh giá của sản phẩm;
+end fork
+:Render các thông tin sản phẩm và đánh giá;
+:Hiển thị giao diện chi tiết sản phẩm đầy đủ;
+|Khách hàng|
+stop
+@enduml

@@ -1,0 +1,37 @@
+@startuml ActivityQuanLyKhieuNai
+|Quản trị viên|
+start
+:Truy cập trang Quản lý khiếu nại;
+|Hệ thống|
+:Gửi yêu cầu tải danh sách khiếu nại lên Server;
+:Truy vấn danh sách khiếu nại từ bảng Complaint trong CSDL;
+:Trả về danh sách khiếu nại;
+:Hiển thị danh sách khiếu nại trên giao diện quản trị;
+|Quản trị viên|
+:Chọn một khiếu nại để xem chi tiết;
+|Hệ thống|
+:Tải lịch sử đối thoại khiếu nại từ CSDL;
+:Hiển thị chi tiết khiếu nại và khung chat phản hồi;
+|Quản trị viên|
+if (Chọn hành động xử lý?) then (Gửi phản hồi cho khách)
+    :Nhập tin nhắn giải quyết khiếu nại;
+    :Nhấn nút "Gửi Phản Hồi";
+    |Hệ thống|
+    :Gửi tin nhắn phản hồi lên Server;
+    :Đẩy tin nhắn mới vào mảng messages của Complaint trong CSDL;
+    :Trả về phản hồi gửi thành công (200);
+    :Cập nhật khung đối thoại hiển thị tin nhắn mới;
+    |Quản trị viên|
+    stop
+else (Cập nhật trạng thái)
+    :Chọn trạng thái mới (Đang xử lý / Đã giải quyết);
+    :Nhấn nút "Cập Nhật Trạng Thái";
+    |Hệ thống|
+    :Gửi yêu cầu cập nhật trạng thái lên Server;
+    :Cập nhật status của khiếu nại trong CSDL;
+    :Trả về phản hồi cập nhật thành công (200);
+    :Làm mới giao diện khiếu nại và hiển thị Toast thành công;
+    |Quản trị viên|
+    stop
+endif
+@enduml

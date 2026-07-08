@@ -1,0 +1,41 @@
+@startuml SequenceXoaGioHang
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Giỏ Hàng" as CartUI
+control "Điều khiển Giỏ Hàng" as CartCtrl
+database "CSDL" as DB
+
+Customer -> CartUI: Mở trang Giỏ hàng (customer.html#cart)
+activate CartUI
+Customer -> CartUI: Nhấp chọn biểu tượng "Thùng rác" (Xóa) của một sản phẩm
+CartUI -> CartUI: Hiển thị Custom Dialog hỏi xác nhận xóa sản phẩm
+alt Chọn "Hủy"
+    CartUI --> Customer: Đóng hộp thoại xác nhận, giữ nguyên giỏ hàng
+else Chọn "Đồng ý"
+    CartUI -> CartCtrl: Gọi API xóa sản phẩm: DELETE /api/cart/remove {userId, productId}
+    activate CartCtrl
+    CartCtrl -> DB: Tìm giỏ hàng hiện tại của người dùng (Cart.findOne({ userId }))
+    activate DB
+    DB --> CartCtrl: Trả về thông tin giỏ hàng
+    deactivate DB
+    alt Không tìm thấy giỏ hàng
+        CartCtrl --> CartUI: Phản hồi 404 (Không tìm thấy giỏ hàng)
+        CartUI -> Customer: Hiển thị Toast thông báo lỗi
+    else Tìm thấy giỏ hàng
+        CartCtrl -> CartCtrl: Loại bỏ phần tử trùng productId khỏi danh sách items
+        CartCtrl -> DB: Lưu giỏ hàng đã cập nhật (cart.save())
+        activate DB
+        DB --> CartCtrl: Lưu thành công
+        deactivate DB
+        CartCtrl -> DB: Nạp thông tin sản phẩm (cart.populate('items.productId'))
+        activate DB
+        DB --> CartCtrl: Trả về giỏ hàng mới
+        deactivate DB
+        CartCtrl --> CartUI: Phản hồi 200 kèm giỏ hàng đã cập nhật
+        deactivate CartCtrl
+        CartUI -> CartUI: Render lại danh sách sản phẩm còn lại và tổng tiền hàng\nCập nhật lại Badge số lượng giỏ hàng trên Header
+        CartUI --> Customer: Hiển thị Toast thông báo xóa sản phẩm thành công
+    end
+end
+deactivate CartUI
+@enduml

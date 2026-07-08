@@ -1,0 +1,32 @@
+@startuml SequenceTheoDoiLuong
+autonumber
+actor "Nhân viên" as Staff
+boundary "Giao diện Bảng Lương" as SalaryUI
+control "Điều khiển Bảng Lương" as SalaryCtrl
+database "CSDL" as DB
+
+Staff -> SalaryUI: Truy cập trang quản lý lương, chọn Tháng/Năm cần tra cứu
+activate SalaryUI
+SalaryUI -> SalaryCtrl: Yêu cầu lấy thông tin lương (userId, month, year)
+activate SalaryCtrl
+SalaryCtrl -> DB: Lấy lương cơ bản của nhân viên (User)
+activate DB
+DB --> SalaryCtrl: Trả về thông tin User (baseSalary)
+deactivate DB
+
+SalaryCtrl -> DB: Lấy lịch sử chấm công trong tháng (Attendance)
+activate DB
+DB --> SalaryCtrl: Trả về danh sách chấm công các ca trực
+deactivate DB
+
+SalaryCtrl -> SalaryCtrl: Tính toán lương: \n- Tổng ca làm thực tế (present)\n- Tổng ca trễ (late) và vắng (absent)\n- Thực nhận = Lương cơ bản * ca làm - phạt trễ/vắng + phụ cấp
+SalaryCtrl --> SalaryUI: Phản hồi bảng lương chi tiết (lương cơ bản, số ca, phạt, thực nhận)
+deactivate SalaryCtrl
+SalaryUI -> Staff: Hiển thị bảng lương chi tiết lên màn hình
+
+opt Gửi phản hồi / khiếu nại về bảng lương
+    Staff -> SalaryUI: Nhấp chọn nút "Khiếu Nại Lương"
+    SalaryUI -> Staff: Điều hướng sang Giao diện Báo cáo trợ giúp và điền sẵn thông tin khiếu nại lương
+end
+deactivate SalaryUI
+@enduml

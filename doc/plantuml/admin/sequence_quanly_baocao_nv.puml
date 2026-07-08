@@ -1,0 +1,59 @@
+@startuml SequenceQuanLyBaoCaoNV
+autonumber
+actor "Quản trị viên" as Admin
+boundary "Giao diện Báo Cáo Nhân Viên" as SupportUI
+control "Điều khiển Báo Cáo Nhân Viên" as SupportCtrl
+database "CSDL" as DB
+
+Admin -> SupportUI: Truy cập mục Báo cáo trợ giúp của Nhân viên
+activate SupportUI
+SupportUI -> SupportCtrl: Yêu cầu lấy danh sách phản hồi nội bộ (StaffFeedback)
+activate SupportCtrl
+SupportCtrl -> DB: Lấy danh sách phản hồi (StaffFeedback.find)
+activate DB
+DB --> SupportCtrl: Trả về danh sách phản hồi nhân viên
+deactivate DB
+SupportCtrl --> SupportUI: Phản hồi danh sách phản hồi
+deactivate SupportCtrl
+SupportUI -> Admin: Hiển thị danh sách phản hồi/báo cáo lỗi của nhân viên
+
+Admin -> SupportUI: Chọn một báo cáo cụ thể để xử lý
+SupportUI -> SupportCtrl: Yêu cầu chi tiết báo cáo (feedbackId)
+activate SupportCtrl
+SupportCtrl -> DB: Tìm báo cáo trợ giúp theo ID và lấy lịch sử tin nhắn
+activate DB
+DB --> SupportCtrl: Trả về chi tiết báo cáo trợ giúp
+deactivate DB
+SupportCtrl --> SupportUI: Phản hồi chi tiết báo cáo
+deactivate SupportCtrl
+SupportUI -> Admin: Hiển thị chi tiết nội dung & khung đối thoại nội bộ
+
+opt Gửi phản hồi / Chỉ đạo cho nhân viên
+    Admin -> SupportUI: Nhập nội dung phản hồi xử lý báo cáo
+    Admin -> SupportUI: Nhấn nút "Gửi Phản Hồi"
+    SupportUI -> SupportCtrl: Gửi yêu cầu phản hồi (feedbackId, adminName, text)
+    activate SupportCtrl
+    SupportCtrl -> DB: Đẩy tin nhắn mới vào mảng messages của StaffFeedback
+    activate DB
+    DB --> SupportCtrl: Xác nhận lưu thành công
+    deactivate DB
+    SupportCtrl --> SupportUI: Phản hồi gửi thành công (200)
+    deactivate SupportCtrl
+    SupportUI -> Admin: Hiển thị Toast thành công & cập nhật lịch sử chat trên giao diện
+end
+
+opt Cập nhật trạng thái xử lý báo cáo trợ giúp
+    Admin -> SupportUI: Chọn trạng thái mới (processing / resolved)
+    Admin -> SupportUI: Nhấn nút "Cập Nhật Trạng Thái"
+    SupportUI -> SupportCtrl: Gửi yêu cầu cập nhật trạng thái (feedbackId, newStatus)
+    activate SupportCtrl
+    SupportCtrl -> DB: Cập nhật status của StaffFeedback theo ID trong CSDL
+    activate DB
+    DB --> SupportCtrl: Xác nhận cập nhật thành công
+    deactivate DB
+    SupportCtrl --> SupportUI: Phản hồi 200 (Cập nhật trạng thái thành công)
+    deactivate SupportCtrl
+    SupportUI -> Admin: Hiển thị Toast thành công & làm mới danh sách báo cáo nhân viên
+end
+deactivate SupportUI
+@enduml

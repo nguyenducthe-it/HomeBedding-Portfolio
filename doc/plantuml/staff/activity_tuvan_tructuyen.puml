@@ -1,0 +1,34 @@
+@startuml ActivityTuVanTrucTuyen
+|Nhân viên|
+start
+:Truy cập trang Tư Vấn Trực Tuyến;
+|Hệ thống|
+:Tải danh sách phiên tư vấn có trạng thái 'open' từ CSDL;
+:Hiển thị danh sách khách hàng đang chờ tư vấn;
+|Nhân viên|
+:Chọn một phiên tư vấn từ danh sách;
+|Hệ thống|
+:Kết nối Socket.io phòng chat tương ứng;
+:Tải lịch sử tin nhắn của phiên tư vấn từ CSDL;
+:Hiển thị khung chat và lịch sử tin nhắn;
+|Nhân viên|
+if (Chọn hành động tiếp theo?) then (Gửi tin nhắn)
+    :Nhập nội dung tin nhắn;
+    :Nhấn nút "Gửi";
+    |Hệ thống|
+    :Lưu tin nhắn mới vào CSDL (bảng Consultation);
+    :Phát (broadcast) tin nhắn qua Socket.io tới Khách hàng;
+    :Hiển thị tin nhắn mới trên khung chat của Nhân viên;
+    |Nhân viên|
+    stop
+else (Đóng phiên tư vấn)
+    :Nhấn nút "Đóng Phiên";
+    |Hệ thống|
+    :Cập nhật trạng thái phiên tư vấn thành 'closed' trong CSDL;
+    :Phát sự kiện kết thúc phiên tư vấn qua Socket.io tới Khách hàng;
+    :Làm mới danh sách phiên chat và đóng khung chat hiện tại;
+    :Hiển thị Toast báo đóng phiên thành công;
+    |Nhân viên|
+    stop
+endif
+@enduml

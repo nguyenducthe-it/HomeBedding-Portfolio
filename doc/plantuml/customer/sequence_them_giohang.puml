@@ -1,0 +1,43 @@
+@startuml SequenceThemGioHang
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Chi Tiết Sản Phẩm" as DetailUI
+control "Điều khiển Giỏ Hàng" as CartCtrl
+database "CSDL" as DB
+
+Customer -> DetailUI: Nhập số lượng & Nhấp nút "Thêm vào giỏ hàng"
+activate DetailUI
+DetailUI -> CartCtrl: Gửi yêu cầu thêm sản phẩm (POST /api/cart/add {userId, productId, quantity})
+activate CartCtrl
+CartCtrl -> DB: Tìm giỏ hàng hiện tại của người dùng (Cart.findOne({ userId }))
+activate DB
+DB --> CartCtrl: Trả về giỏ hàng (nếu có)
+deactivate DB
+alt Giỏ hàng chưa tồn tại
+    CartCtrl -> DB: Khởi tạo giỏ hàng mới cho người dùng
+    activate DB
+    DB --> CartCtrl: Đã tạo giỏ hàng trống
+    deactivate DB
+end
+
+CartCtrl -> CartCtrl: Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
+alt Sản phẩm đã có trong giỏ hàng
+    CartCtrl -> CartCtrl: Cộng dồn số lượng mới vào số lượng cũ
+else Sản phẩm chưa có trong giỏ hàng
+    CartCtrl -> CartCtrl: Thêm mới phần tử sản phẩm và số lượng vào danh sách
+end
+
+CartCtrl -> DB: Lưu lại thông tin giỏ hàng (cart.save())
+activate DB
+DB --> CartCtrl: Lưu thành công
+deactivate DB
+CartCtrl -> DB: Nạp thông tin sản phẩm (cart.populate('items.productId'))
+activate DB
+DB --> CartCtrl: Trả về chi tiết giỏ hàng đầy đủ
+deactivate DB
+CartCtrl --> DetailUI: Trả về đối tượng giỏ hàng mới cập nhật
+deactivate CartCtrl
+DetailUI -> DetailUI: Cập nhật số lượng hiển thị trên Badge giỏ hàng ở Header
+DetailUI --> Customer: Hiển thị Toast thông báo thêm sản phẩm thành công
+deactivate DetailUI
+@enduml

@@ -1,0 +1,23 @@
+@startuml ActivityBoYeuThich
+|Khách hàng|
+start
+:Mở trang sản phẩm yêu thích (customer.html#wishlist);
+:Nhấp chọn biểu tượng trái tim (đang tô đỏ) để bỏ;
+|Hệ thống|
+:Gửi yêu cầu toggle yêu thích lên Server;
+:Tìm thông tin người dùng trong CSDL;
+if (Sản phẩm có trong wishlist?) then (Không)
+    :Trả về thông báo lỗi;
+    |Khách hàng|
+    stop
+else (Có)
+    |Hệ thống|
+    :Xóa productId khỏi mảng user.wishlist;
+    :Lưu thay đổi người dùng vào CSDL;
+    :Trả về phản hồi 200 thành công;
+    :Xóa sản phẩm đó khỏi danh sách hiển thị trên UI;
+    :Hiển thị Toast báo đã bỏ sản phẩm yêu thích;
+    |Khách hàng|
+    stop
+endif
+@enduml

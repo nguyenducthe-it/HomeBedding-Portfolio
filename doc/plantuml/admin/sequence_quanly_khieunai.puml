@@ -1,0 +1,59 @@
+@startuml SequenceQuanLyKhieuNai
+autonumber
+actor "Quản trị viên" as Admin
+boundary "Giao diện Khiếu Nại" as ComplaintUI
+control "Điều khiển Khiếu Nại" as ComplaintCtrl
+database "CSDL" as DB
+
+Admin -> ComplaintUI: Truy cập mục Quản lý khiếu nại của khách hàng
+activate ComplaintUI
+ComplaintUI -> ComplaintCtrl: Yêu cầu lấy danh sách khiếu nại (filters: status, type)
+activate ComplaintCtrl
+ComplaintCtrl -> DB: Lấy danh sách khiếu nại (Complaint.find)
+activate DB
+DB --> ComplaintCtrl: Trả về danh sách khiếu nại
+deactivate DB
+ComplaintCtrl --> ComplaintUI: Phản hồi danh sách khiếu nại
+deactivate ComplaintCtrl
+ComplaintUI -> Admin: Hiển thị danh sách khiếu nại
+
+Admin -> ComplaintUI: Chọn một khiếu nại để xử lý
+ComplaintUI -> ComplaintCtrl: Yêu cầu chi tiết khiếu nại (complaintId)
+activate ComplaintCtrl
+ComplaintCtrl -> DB: Tìm khiếu nại theo ID và lấy lịch sử tin nhắn
+activate DB
+DB --> ComplaintCtrl: Trả về chi tiết khiếu nại
+deactivate DB
+ComplaintCtrl --> ComplaintUI: Phản hồi thông tin chi tiết
+deactivate ComplaintCtrl
+ComplaintUI -> Admin: Hiển thị nội dung khiếu nại và hộp thoại phản hồi
+
+opt Gửi phản hồi cho khách hàng
+    Admin -> ComplaintUI: Nhập tin nhắn phản hồi giải quyết khiếu nại
+    Admin -> ComplaintUI: Nhấn nút "Gửi Phản Hồi"
+    ComplaintUI -> ComplaintCtrl: Gửi phản hồi (complaintId, adminName, text)
+    activate ComplaintCtrl
+    ComplaintCtrl -> DB: Đẩy tin nhắn mới vào mảng messages của Complaint
+    activate DB
+    DB --> ComplaintCtrl: Xác nhận lưu thành công
+    deactivate DB
+    ComplaintCtrl --> ComplaintUI: Phản hồi gửi thành công (200)
+    deactivate ComplaintCtrl
+    ComplaintUI -> Admin: Hiển thị Toast thành công & cập nhật lịch sử đối thoại trên khung hình
+end
+
+opt Thay đổi trạng thái xử lý khiếu nại
+    Admin -> ComplaintUI: Chọn trạng thái mới (processing / resolved)
+    Admin -> ComplaintUI: Nhấn nút "Cập Nhật Trạng Trạng Thái"
+    ComplaintUI -> ComplaintCtrl: Gửi yêu cầu cập nhật trạng thái (complaintId, newStatus)
+    activate ComplaintCtrl
+    ComplaintCtrl -> DB: Cập nhật status trong tài liệu Complaint theo ID
+    activate DB
+    DB --> ComplaintCtrl: Xác nhận cập nhật thành công
+    deactivate DB
+    ComplaintCtrl --> ComplaintUI: Phản hồi 200 (Cập nhật trạng thái thành công)
+    deactivate ComplaintCtrl
+    ComplaintUI -> Admin: Hiển thị Toast thành công & làm mới giao diện khiếu nại
+end
+deactivate ComplaintUI
+@enduml

@@ -1,0 +1,38 @@
+@startuml ActivityBaoCaoTroGiup
+|Nhân viên|
+start
+:Truy cập mục Báo cáo Trợ giúp;
+|Hệ thống|
+:Gửi yêu cầu tải lịch sử báo cáo nội bộ lên Server;
+:Truy vấn danh sách phản hồi từ bảng StaffFeedback trong CSDL;
+:Hiển thị lịch sử báo cáo và trạng thái tương ứng;
+|Nhân viên|
+if (Muốn gửi báo cáo trợ giúp mới?) then (Không)
+    stop
+else (Có)
+    :Nhấn nút "Tạo Báo Cáo Mới";
+    |Hệ thống|
+    :Hiển thị form nhập báo cáo trợ giúp;
+    |Nhân viên|
+    :Chọn Loại báo cáo (feedbackType);
+    :Chọn Mức độ ưu tiên (priority);
+    :Nhập nội dung phản hồi/trợ giúp;
+    :Nhấn nút "Gửi Báo Cáo";
+    |Hệ thống|
+    :Gửi dữ liệu báo cáo lên Server;
+    if (Nội dung nhập trống?) then (Có)
+        :Trả về lỗi thiếu thông tin (400);
+        :Hiển thị Toast báo lỗi;
+        |Nhân viên|
+        stop
+    else (Không)
+        |Hệ thống|
+        :Lưu bản ghi mới vào StaffFeedback trong CSDL (status: 'pending');
+        :Thông báo cho Quản trị viên (Admin) biết có phản hồi mới;
+        :Trả về kết quả gửi thành công (200);
+        :Làm mới danh sách báo cáo trợ giúp và hiển thị Toast thành công;
+        |Nhân viên|
+        stop
+    endif
+endif
+@enduml

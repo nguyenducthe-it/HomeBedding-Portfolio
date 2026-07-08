@@ -1,0 +1,32 @@
+@startuml ActivityProfile
+|Nhân viên|
+start
+:Truy cập mục Thông tin cá nhân;
+|Hệ thống|
+:Gửi yêu cầu lấy thông tin cá nhân lên Server;
+:Truy vấn thông tin người dùng từ bảng User trong CSDL;
+:Trả về dữ liệu tài khoản;
+:Hiển thị thông tin cá nhân hiện tại lên Form;
+|Nhân viên|
+if (Muốn cập nhật thông tin cá nhân?) then (Không)
+    stop
+else (Có)
+    :Chỉnh sửa các trường thông tin (fullName, phone, avatar, education, skills);
+    :Nhấn nút "Lưu Thay Đổi";
+    |Hệ thống|
+    :Gửi dữ liệu cập nhật lên Server;
+    if (Họ tên hoặc Số điện thoại trống?) then (Có)
+        :Trả về lỗi dữ liệu không hợp lệ (400);
+        :Hiển thị Toast báo lỗi;
+        |Nhân viên|
+        stop
+    else (Không)
+        |Hệ thống|
+        :Cập nhật các trường dữ liệu vào bảng User trong CSDL;
+        :Trả về kết quả cập nhật thành công (200);
+        :Hiển thị Toast thông báo thành công và cập nhật thông tin mới trên giao diện;
+        |Nhân viên|
+        stop
+    endif
+endif
+@enduml

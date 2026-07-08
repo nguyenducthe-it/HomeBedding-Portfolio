@@ -1,0 +1,63 @@
+@startuml ActivityQuanLyTaiKhoan
+|Quản trị viên|
+start
+:Truy cập trang Quản lý tài khoản;
+|Hệ thống|
+:Tải danh sách tài khoản người dùng;
+:Hiển thị danh sách tài khoản;
+|Quản trị viên|
+if (Chọn thao tác quản lý?) then (Tạo tài khoản mới)
+    :Nhấn nút "Tạo Tài Khoản";
+    :Nhập thông tin (Họ tên, Email, Số điện thoại, Vai trò, Mật khẩu);
+    :Nhấn nút "Lưu";
+    |Hệ thống|
+    :Gửi thông tin tài khoản mới lên Server;
+    :Kiểm tra trùng lặp Email/Số điện thoại trong CSDL;
+    if (Tài khoản đã tồn tại?) then (Có)
+        :Trả về lỗi trùng lặp (400);
+        :Hiển thị Toast báo lỗi tài khoản đã tồn tại;
+        |Quản trị viên|
+        stop
+    else (Không)
+        |Hệ thống|
+        :Mã hóa mật khẩu bằng bcryptjs;
+        :Lưu tài khoản mới vào CSDL bảng User;
+        :Trả về phản hồi tạo thành công (201);
+        :Làm mới danh sách hiển thị và hiển thị Toast thành công;
+        |Quản trị viên|
+        stop
+    endif
+elseif (Sửa thông tin / Đổi quyền) then (Có)
+    |Quản trị viên|
+    :Chọn tài khoản cần chỉnh sửa;
+    :Chỉnh sửa thông tin hoặc thay đổi Vai trò (Customer/Staff/Admin);
+    :Nhấn nút "Cập Nhật";
+    |Hệ thống|
+    :Gửi yêu cầu cập nhật lên Server;
+    :Cập nhật thông tin User trong CSDL;
+    :Trả về phản hồi thành công (200);
+    :Cập nhật danh sách hiển thị và hiển thị Toast thành công;
+    |Quản trị viên|
+    stop
+elseif (Xóa tài khoản) then (Có)
+    |Quản trị viên|
+    :Chọn tài khoản cần xóa;
+    :Nhấn nút "Xóa";
+    :Xác nhận "Đồng ý xóa";
+    |Hệ thống|
+    :Gửi yêu cầu xóa lên Server;
+    :Xóa bản ghi User khỏi CSDL;
+    :Trả về phản hồi xóa thành công (200);
+    :Cập nhật danh sách hiển thị và hiển thị Toast thành công;
+    |Quản trị viên|
+    stop
+else (Chỉ tìm kiếm/Xem danh sách)
+    |Quản trị viên|
+    :Nhập từ khóa tìm kiếm theo tên hoặc email;
+    |Hệ thống|
+    :Truy vấn danh sách User khớp từ khóa;
+    :Hiển thị danh sách User lên màn hình;
+    |Quản trị viên|
+    stop
+endif
+@enduml

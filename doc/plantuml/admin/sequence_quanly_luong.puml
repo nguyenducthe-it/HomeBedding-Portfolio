@@ -1,0 +1,54 @@
+@startuml SequenceQuanLyLuong
+autonumber
+actor "Quản trị viên" as Admin
+boundary "Giao diện Quản Lý Lương" as SalaryUI
+control "Điều khiển Quản Lý Lương" as SalaryCtrl
+database "CSDL" as DB
+
+Admin -> SalaryUI: Truy cập mục Quản lý lương, chọn Tháng/Năm cần thống kê
+activate SalaryUI
+SalaryUI -> SalaryCtrl: Yêu cầu bảng lương toàn bộ nhân viên (month, year)
+activate SalaryCtrl
+SalaryCtrl -> DB: Lấy danh sách nhân viên & Lương cơ bản (User.find({role: 'staff'}))
+activate DB
+DB --> SalaryCtrl: Trả về danh sách nhân viên
+deactivate DB
+
+SalaryCtrl -> DB: Lấy lịch sử chấm công của tất cả nhân viên trong tháng (Attendance)
+activate DB
+DB --> SalaryCtrl: Trả về danh sách chấm công
+deactivate DB
+
+SalaryCtrl -> SalaryCtrl: Tính toán lương thực nhận cho từng nhân viên:\nThực nhận = Lương cơ bản * ca làm - phạt trễ/vắng + phụ cấp
+SalaryCtrl --> SalaryUI: Phản hồi bảng lương chi tiết toàn hệ thống
+deactivate SalaryCtrl
+SalaryUI -> Admin: Hiển thị bảng lương tổng hợp của tất cả nhân viên
+
+opt Thay đổi lương cơ bản của nhân viên
+    Admin -> SalaryUI: Chọn nhân viên, nhập lương cơ bản mới (baseSalary)
+    Admin -> SalaryUI: Nhấn nút "Cập Nhật Lương Cơ Bản"
+    SalaryUI -> SalaryCtrl: Gửi yêu cầu cập nhật lương (staffId, newBaseSalary)
+    activate SalaryCtrl
+    SalaryCtrl -> DB: Cập nhật trường baseSalary trong tài liệu User theo staffId
+    activate DB
+    DB --> SalaryCtrl: Xác nhận cập nhật thành công
+    deactivate DB
+    SalaryCtrl --> SalaryUI: Phản hồi 200 (Cập nhật lương thành công)
+    deactivate SalaryCtrl
+    SalaryUI -> Admin: Hiển thị Toast thông báo cập nhật thành công & tính toán lại bảng lương hiển thị
+end
+
+opt Phê duyệt & Đánh dấu đã thanh toán lương
+    Admin -> SalaryUI: Chọn danh sách nhân viên và nhấn "Thanh Toán Lương"
+    SalaryUI -> SalaryCtrl: Gửi yêu cầu thanh toán lương (month, year, staffIds)
+    activate SalaryCtrl
+    SalaryCtrl -> DB: Lưu thông tin giao dịch chi lương hoặc đánh dấu đã chi lương
+    activate DB
+    DB --> SalaryCtrl: Xác nhận lưu thành công
+    deactivate DB
+    SalaryCtrl --> SalaryUI: Phản hồi 200 (Đã ghi nhận thanh toán lương)
+    deactivate SalaryCtrl
+    SalaryUI -> Admin: Hiển thị Toast thành công, cập nhật trạng thái bảng lương thành "Đã thanh toán"
+end
+deactivate SalaryUI
+@enduml

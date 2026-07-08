@@ -1,0 +1,36 @@
+@startuml SequenceTimKiemSP
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Sản Phẩm" as ProductUI
+control "Điều khiển Sản Phẩm" as ProductCtrl
+database "CSDL" as DB
+
+Customer -> ProductUI: Truy cập trang sản phẩm (customer.html#products)
+activate ProductUI
+ProductUI -> ProductCtrl: Gửi yêu cầu lấy tất cả sản phẩm
+activate ProductCtrl
+ProductCtrl -> DB: Tìm kiếm tất cả sản phẩm (Product.find({}))
+activate DB
+DB --> ProductCtrl: Trả về danh sách tất cả sản phẩm
+deactivate DB
+ProductCtrl --> ProductUI: Trả về danh sách sản phẩm
+deactivate ProductCtrl
+ProductUI --> Customer: Hiển thị danh sách sản phẩm ban đầu
+
+Customer -> ProductUI: Nhập từ khóa tìm kiếm và chọn danh mục
+ProductUI -> ProductCtrl: Gọi API tìm kiếm: GET /api/products/all?search=[keyword]&category=[mùa]
+activate ProductCtrl
+ProductCtrl -> DB: Tìm kiếm sản phẩm theo điều kiện regex tên và danh mục
+activate DB
+DB --> ProductCtrl: Trả về danh sách sản phẩm thỏa mãn điều kiện
+deactivate DB
+alt Không tìm thấy sản phẩm nào
+    ProductCtrl --> ProductUI: Phản hồi 200 kèm danh sách rỗng
+    ProductUI --> Customer: Hiển thị thông báo "Không tìm thấy sản phẩm phù hợp"
+else Có tìm thấy sản phẩm
+    ProductCtrl --> ProductUI: Phản hồi 200 kèm danh sách sản phẩm
+    ProductUI --> Customer: Hiển thị danh sách sản phẩm tìm được lên màn hình
+end
+deactivate ProductCtrl
+deactivate ProductUI
+@enduml

@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Home Bedding</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/customer.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <script src="../js/theme_loader.js"></script>
+</head>
+
+<body style="background-color: var(--bg-color, #f5f6f8); transition: background-color 0.3s ease;">
+
+    <div class="dashboard-container">
+        <!-- ================= SIDEBAR ================= -->
+        <aside class="sidebar">
+            <a href="customer.html" class="logo"
+                style="text-decoration: none; cursor: pointer; display: block; text-align: center; padding: 0; margin-bottom: 20px; width: 100%;">
+                <img src="/images/logo.png" alt="Home Bedding Logo"
+                    style="width: 100%; height: auto; object-fit: contain; margin: 0 auto; transform: scale(1.15);">
+            </a>
+
+            <nav class="sidebar-menu">
+                <ul>
+                    <!-- 1. Trang chủ -->
+                    <li class="active" id="menu-customer-home">
+                        <a href="#" onclick="showSection('customer-home')"><i class="fa-solid fa-house"></i> Trang
+                            chủ</a>
+                    </li>
+                    <!-- 2. Sản phẩm -->
+                    <li class="has-submenu" id="menu-customer-products">
+                        <a href="#" onclick="showSection('customer-products')"><i class="fa-solid fa-bed"></i> Sản
+                            phẩm</a>
+                        <ul class="submenu">
+                            <li><a href="#" onclick="filterByCategory('4 mùa'); event.preventDefault();">4 Mùa</a></li>
+                            <li><a href="#" onclick="filterByCategory('mùa xuân'); event.preventDefault();">Mùa xuân</a>
+                            </li>
+                            <li><a href="#" onclick="filterByCategory('mùa hạ'); event.preventDefault();">Mùa hạ</a>
+                            </li>
+                            <li><a href="#" onclick="filterByCategory('mùa thu'); event.preventDefault();">Mùa thu</a>
+                            </li>
+                            <li><a href="#" onclick="filterByCategory('mùa đông'); event.preventDefault();">Mùa đông</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- 3. Wishlist -->
+                    <li id="menu-customer-wishlist"><a href="#" onclick="showSection('customer-wishlist')"><i
+                                class="fa-regular fa-heart"></i> Wishlist</a></li>
+                    <!-- 4. Giỏ hàng -->
+                    <li id="menu-customer-cart">
+                        <a href="#" onclick="showSection('customer-cart')"><i class="fa-solid fa-cart-shopping"></i> Giỏ
+                            hàng</a>
+                    </li>
+                    <!-- 5. Lịch sử đơn hàng -->
+                    <li id="menu-customer-orders">
+                        <a href="#" onclick="showSection('order-history')"><i class="fa-solid fa-truck-fast"></i> Lịch
+                            sử đơn hàng</a>
+                    </li>
+                    <!-- 6. Đánh giá của tôi -->
+                    <li id="menu-customer-reviews"><a href="#" onclick="showSection('customer-reviews')"><i
+                                class="fa-regular fa-star"></i> Đánh giá của tôi</a></li>
+                    <!-- 7. Tư vấn trực tuyến -->
+                    <li id="menu-customer-consultation"><a href="#" onclick="showSection('consultation')"><i
+                                class="fa-solid fa-headset"></i> Tư vấn trực tuyến</a></li>
+                    <!-- 8. Khiếu nại Phản hồi -->
+                    <li id="menu-customer-complaints"><a href="#"
+                            onclick="showSection('feedback-section'); switchFbTab('new');"><i
+                                class="fa-solid fa-triangle-exclamation"></i> Khiếu nại & Phản hồi</a></li>
+                    <!-- 9. Thông tin cá nhân -->
+                    <li id="menu-customer-profile">
+                        <a href="#" onclick="showSection('customer-profile')"><i class="fa-solid fa-user"></i> Thông tin
+                            cá nhân</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <ul>
+                    <li><a href="index.html"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- ================= MAIN CONTENT ================= -->
+        <main class="main-content">
+
+            <!-- ================= MODAL CHI TIẾT SẢN PHẨM ================= -->
+            <div id="productDetailModal" class="modal product-detail-modal-container"
+                style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); overflow-y:auto;">
+                <div class="modal-content product-detail-modal-content"
+                    style="background:#fff; margin:40px auto 0 auto; padding:0; border-radius:15px; width:90%; max-width:1100px; position:relative; box-shadow: 0 10px 40px rgba(0,0,0,0.2); overflow:hidden; display:flex; flex-direction:row; flex-shrink: 0;">
+                    <span class="close-btn" onclick="closeProductDetailModal()"
+                        style="position:absolute; right:15px; top:10px; font-size:28px; cursor:pointer; color:#999; z-index: 2;">&times;</span>
+
+                    <div class="product-detail-left-col"
+                        style="width: 450px; flex-shrink: 0; padding: 30px; background: #fafafa; border-right: 1px solid #eee; display: flex; flex-direction: column;">
+                        <div
+                            style="width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden; margin-bottom: 15px; background: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative;">
+                            <img id="detailMainImg" src="" style="width: 100%; height: 100%; object-fit: contain;"
+                                alt="Product">
+                            <i class="fa-solid fa-expand" onclick="openLightbox()"
+                                style="position: absolute; bottom: 15px; right: 15px; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 50%; cursor: pointer; color: #555; z-index: 10; font-size: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);"></i>
+                        </div>
+                        <div id="detailThumbnails"
+                            style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;">
+                            <!-- Thumbnails go here -->
+                        </div>
+                    </div>
+
+                    <div class="product-detail-right-col"
+                        style="flex: 1; padding: 30px; display: flex; flex-direction: column; max-height: 80vh; overflow-y: auto;">
+                        <div style="margin-bottom: 10px;">
+                            <span id="detailTag"
+                                style="background: var(--primary-olive-light); color: var(--primary-olive-dark); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;">Hạ</span>
+                        </div>
+                        <h2 id="detailTitle" style="font-size: 26px; color: #333; margin-bottom: 10px;">Chăn hè cotton
+                        </h2>
+                        <div id="detailPrice"
+                            style="font-size: 22px; color: #222; font-weight: 700; margin-bottom: 15px;">100.009 đ</div>
+                        <div id="detailDesc"
+                            style="color: #666; font-size: 14px; margin-bottom: 25px; line-height: 1.5;">chăn hè siêu
+                            xinh</div>
+
+                        <div
+                            style="position: sticky; top: -5px; background: #fff; z-index: 10; padding: 15px 0; margin-bottom: 10px; border-bottom: 1px solid #eee;">
+                            <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: center;">
+                                <div
+                                    style="display: flex; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; width: 120px;">
+                                    <button onclick="updateQuantity(-1)"
+                                        style="width: 35px; height: 35px; background: #fff; border: none; cursor: pointer; font-size: 18px; color: #555;">-</button>
+                                    <input type="number" id="detailQty" value="1" min="1"
+                                        style="width: 50px; border: none; text-align: center; border-left: 1px solid #ddd; border-right: 1px solid #ddd; font-weight: 600; color: #333; outline: none; -moz-appearance: textfield;">
+                                    <button onclick="updateQuantity(1)"
+                                        style="width: 35px; height: 35px; background: #fff; border: none; cursor: pointer; font-size: 18px; color: #555;">+</button>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 15px;">
+                                <button onclick="addDetailToCart()"
+                                    style="flex: 1; padding: 12px; background: var(--primary-olive-dark); color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s;"><i
+                                        class="fa-solid fa-cart-shopping"></i> Thêm vào giỏ</button>
+                                <button onclick="buyNow()"
+                                    style="flex: 1; padding: 12px; background: #f25c3a; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s;"><i
+                                        class="fa-solid fa-bolt"></i> Mua ngay</button>
+                                <button id="btnDetailWishlist" onclick="toggleWishlistDetail()"
+                                    style="padding: 12px; background: #fdf2f0; color: #e74c3c; border: 1px solid #fadbd8; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; width: 48px; display: flex; justify-content: center; align-items: center;"><i
+                                        class="fa-regular fa-heart"></i></button>
+                            </div>
+                        </div>
+
+                        <div style="border-top: 1px solid #eee; padding-top: 20px;">
+                            <h3 style="font-size: 16px; color: #333; margin-bottom: 15px;">Đánh giá từ khách hàng</h3>
+                            <div id="detailReviewsList" style="display: flex; flex-direction: column; gap: 15px;">
+                                <!-- Reviews go here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tiêu đề Gợi ý sản phẩm (ẩn mặc định) -->
+                <h3 id="relatedProductsTitle"
+                    style="color: #fff; font-size: 18px; margin-top: 30px; margin-bottom: 10px; font-weight: 600; text-align: center; display: none; flex-shrink: 0;">
+                    Gợi ý sản phẩm</h3>
+
+                <!-- Sản phẩm liên quan (Gợi ý) -->
+                <div id="relatedProductsContainer"
+                    style="display: flex; gap: 20px; justify-content: center; margin-top: 10px; flex-wrap: wrap; padding-bottom: 60px; padding-top: 10px; flex-shrink: 0;">
+                    <!-- JS sẽ gen các ô sản phẩm vào đây -->
+                </div>
+            </div>
+
+            <!-- Toast Container -->
+            <div id="toast" class="toast"></div>
+
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Tìm kiếm sản phẩm...">
+                </div>
+
+                <div class="topbar-right">
+                    <div class="cart-icon" onclick="showSection('customer-cart')" style="cursor: pointer;">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="badge" id="headerCartBadge">0</span>
+                    </div>
+                    <div class="user-profile" onclick="showSection('customer-profile')" style="cursor: pointer;">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+                            alt="Avatar">
+                        <span class="user-name" id="user-name-header">Anh Thơ</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- SUB NAVIGATION -->
+            <nav class="sub-nav">
+                <ul>
+                    <li><a href="#" onclick="showSection('customer-home')" class="active" id="nav-customer-home">Trang
+                            chủ</a></li>
+                    <li><a href="#" onclick="showSection('customer-products')" id="nav-customer-products">Sản phẩm</a>
+                    </li>
+                    <li><a href="#" onclick="showSection('customer-wishlist')" id="nav-customer-wishlist">Wishlist</a>
+                    </li>
+                    <li><a href="#" onclick="showSection('customer-cart')" id="nav-customer-cart">Giỏ hàng</a></li>
+                    <li><a href="#" onclick="showSection('order-history')" id="nav-order-history">Lịch sử đơn hàng</a>
+                    </li>
+                    <li><a href="#" onclick="showSection('customer-reviews')" id="nav-customer-reviews">Đánh giá của
+                            tôi</a></li>
+                    <li><a href="#" onclick="showSection('consultation')" id="nav-customer-consultation">Tư vấn trực
+                            tuyến</a></li>
+                    <li><a href="#" onclick="showSection('feedback-section'); switchFbTab('new');"
+                            id="nav-customer-complaints">Khiếu nại & Phản hồi</a></li>
+                    <li><a href="#" onclick="showSection('customer-profile')" id="nav-customer-profile">Thông tin cá
+                            nhân</a></li>
+                </ul>
+            </nav>
+
+            <!-- ================= TRANG CHỦ MỚI ================= -->
+            <div id="customer-home" class="customer-section" style="display: block;">
+                <!-- Banner tỷ lệ rộng 1600x400, hiển thị 100% chiều rộng -->
+                <div class="new-welcome-banner"
+                    style="position: relative; width: 100%; max-width: 1600px; margin: 0 auto 40px auto; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: center;">
+                    <img src="/images/banner_hd.png" alt="Homme Bedding Banner"
+                        style="width: 100%; height: auto; display: block; position: relative;"
+                        onerror="this.src='/images/new_banner4.png'">
+
+                    <!-- Vùng click ẩn đè lên nút KHÁM PHÁ NGAY ở giữa dưới -->
+                    <a href="#" onclick="document.getElementById('bestsellers-section').scrollIntoView({ behavior: 'smooth' }); return false;"
+                        style="position: absolute; left: 41%; bottom: 6%; width: 18%; height: 16%; z-index: 10; cursor: pointer; display: block;"
+                        title="Khám phá ngay"></a>
+                </div>
+
+                <h2 id="bestsellers-section" class="customer-section-title">Sản phẩm Bán Chạy Nhất</h2>
+                <div class="product-grid-new" id="customer-bestsellers-grid" style="margin-bottom: 20px;">
+                    <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
+                        <i class="fa-solid fa-spinner fa-spin" style="margin-right: 10px;"></i> Đang tải...
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 40px; border-top: 1px solid #ddd; padding-top: 20px;">
+                    <a href="#" onclick="document.getElementById('nav-customer-products').click(); return false;"
+                        style="display: inline-block; padding: 10px 30px; background-color: var(--primary-olive); color: #fff; text-decoration: none; border-radius: 20px; font-weight: 600; font-size: 15px; transition: 0.3s;"><i
+                            class="fa-solid fa-arrow-right" style="margin-right: 8px;"></i>Xem thêm sản phẩm</a>
+                </div>
+
+                <!-- DANH SÁCH GIỎ HÀNG / YÊU THÍCH VÀ QUẢN LÝ ĐƠN HÀNG -->
+                <div class="home-widgets-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
+                    
+                    <!-- Widget 1: Giỏ hàng / Yêu thích -->
+                    <div class="home-widget-card" style="background: #fff; padding: 25px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column;">
+                        <h3 style="font-size: 20px; color: #333; margin-bottom: 15px; font-family: 'Quicksand', sans-serif; font-weight: 700;">Giỏ hàng / Yêu thích</h3>
+                        <div class="widget-tabs" style="display: flex; gap: 20px; border-bottom: 1px solid #eee; margin-bottom: 20px; padding-bottom: 8px;">
+                            <span id="widget-tab-cart" onclick="switchWidgetTab('cart')" style="cursor: pointer; font-size: 15px; font-weight: 700; color: var(--primary-olive); border-bottom: 2px solid var(--primary-olive); padding-bottom: 6px;">Giỏ hàng</span>
+                            <span id="widget-tab-wishlist" onclick="switchWidgetTab('wishlist')" style="cursor: pointer; font-size: 15px; font-weight: 700; color: #999; padding-bottom: 6px;">Yêu thích</span>
+                        </div>
+                        <div id="widget-items-list" style="display: flex; flex-direction: column; gap: 15px; max-height: 350px; overflow-y: auto; padding-right: 5px;">
+                            <!-- items -->
+                        </div>
+                    </div>
+
+                    <!-- Widget 2: Quản lý đơn hàng -->
+                    <div class="home-widget-card" style="background: #fff; padding: 25px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column;">
+                        <h3 style="font-size: 20px; color: #333; margin-bottom: 20px; font-family: 'Quicksand', sans-serif; font-weight: 700;">Quản lý đơn hàng</h3>
+                        <div id="widget-orders-list" style="display: flex; flex-direction: column; gap: 15px; max-height: 350px; overflow-y: auto; padding-right: 5px;">
+                            <!-- orders -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ================= SẢN PHẨM ================= -->
+            <div id="customer-products" class="customer-section" style="display: none; position: relative;">
+                <style>
+                    @keyframes customerFall {
+                        0% {
+                            transform: translateY(-20px) rotate(0deg);
+                            opacity: 0;
+                        }
+
+                        10% {
+                            opacity: var(--max-op, 0.8);
+                        }
+
+                        80% {
+                            opacity: var(--max-op, 0.8);
+                        }
+
+                        100% {
+                            transform: translateY(140px) rotate(360deg);
+                            opacity: 0;
+                        }
+                    }
+                </style>
+                <!-- Container chứa hiệu ứng rơi (hoa, tuyết...) bị giới hạn độ cao -->
+                <div id="customer-effect-container"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 130px; pointer-events: none; overflow: hidden; z-index: 100;">
+                </div>
+
+                <h2 class="customer-section-title" style="position: relative; z-index: 1;">Sản phẩm</h2>
+
+                <div class="filter-pills" id="productFilterPills">
+                    <div class="filter-pill active" data-category="all"><i class="fa-solid fa-globe"></i> Tất cả</div>
+                    <div class="filter-pill" data-category="4 mùa"><i class="fa-solid fa-leaf"></i> 4 Mùa</div>
+                    <div class="filter-pill" data-category="mùa xuân"><i class="fa-solid fa-seedling"></i> Mùa Xuân</div>
+                    <div class="filter-pill" data-category="mùa hạ"><i class="fa-solid fa-sun"></i> Mùa Hạ</div>
+                    <div class="filter-pill" data-category="mùa thu"><i class="fa-brands fa-canadian-maple-leaf"></i> Mùa Thu</div>
+                    <div class="filter-pill" data-category="mùa đông"><i class="fa-solid fa-snowflake"></i> Mùa Đông</div>
+                </div>
+
+                <!-- CUSTOMER SHOP GRID LAYOUT -->
+                <div class="product-grid-new" id="customerProductGridNew">
+                    <!-- Products will be rendered here by JS -->
+                    <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
+                        <i class="fa-solid fa-spinner fa-spin" style="margin-right: 10px;"></i> Đang tải sản phẩm...
+                    </div>
+                </div>
+            </div> <!-- CLOSE customer-products -->
+
+            <!-- SECTION: TƯ VẤN TRỰC TUYẾN (Chat with Staff) -->
+            <div id="consultation" class="customer-section" style="display: none; padding: 20px;">
+                <h3
+                    style="font-family:'Playfair Display', serif; color:var(--primary-olive); font-size: 24px; margin-bottom: 20px;">
+                    Tư vấn trực tuyến</h3>
+
+                <div id="consult-start-view">
+                    <div
+                        style="background: #fdfdfd; padding: 30px; border-radius: 15px; border: 1px dashed var(--primary-olive); text-align: center;">
+                        <i class="fa-solid fa-comments"
+                            style="font-size: 48px; color: var(--primary-olive); margin-bottom: 20px;"></i>
+                        <p style="color: #666; margin-bottom: 20px;">Bạn cần hỗ trợ về sản phẩm hoặc tư vấn chọn size?
+                            Hãy nhắn tin cho chúng tôi!</p>
+                        <button onclick="startNewConsultation()"
+                            style="padding: 12px 30px; background: var(--primary-olive); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Bắt
+                            đầu trò chuyện</button>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h4 style="margin-bottom: 15px; color: #333;">Lịch sử tư vấn</h4>
+                        <div id="consult-history-list" style="display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Consultation history -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat view -->
+                <div id="consult-chat-view"
+                    style="display: none; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                    <button onclick="backToConsultList()"
+                        style="background: none; border: none; color: var(--primary-olive); font-weight: 600; cursor: pointer; margin-bottom: 15px;"><i
+                            class="fa-solid fa-arrow-left"></i> Quay lại</button>
+                    <div id="consult-chat-thread"
+                        style="height: 400px; overflow-y: auto; border: 1px solid #eee; border-radius: 10px; padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px; background: #fafafa;">
+                        <!-- Messages -->
+                    </div>
+
+                    <div id="consultPreviewArea"
+                        style="margin-bottom: 10px; font-size: 13px; color: var(--primary-olive-dark); font-weight: bold;">
+                    </div>
+
+                    <form id="consultReplyForm" style="display: flex; gap: 10px; align-items: center;">
+                        <input type="hidden" id="consultReplyId">
+
+                        <label style="cursor: pointer; color: var(--primary-olive); font-size: 20px;" title="Gửi ảnh">
+                            <i class="fa-solid fa-paperclip"></i>
+                            <input type="file" id="consultReplyFile" style="display: none;"
+                                accept="image/*, .pdf, .doc, .docx" onchange="handleConsultFileSelect(event)">
+                        </label>
+
+                        <button type="button" onclick="openConsultOrderModal()"
+                            style="background: none; border: none; color: var(--primary-olive); font-size: 20px; cursor: pointer;"
+                            title="Đính kèm đơn hàng">
+                            <i class="fa-solid fa-receipt"></i>
+                        </button>
+
+                        <input type="text" id="consultReplyText" placeholder="Nhập tin nhắn..."
+                            style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                        <button type="submit"
+                            style="padding: 12px 25px; background: var(--primary-olive); color: #fff; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">Gửi</button>
+                    </form>
+                </div>
+            </div> <!-- CLOSE consultation -->
+
+            <!-- MODAL CHỌN ĐƠN HÀNG CHO CHAT -->
+            <div id="consultOrderModal" class="modal"
+                style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+                <div class="modal-content"
+                    style="background-color: #fff; margin: 10% auto; padding: 30px; border-radius: 12px; width: 500px; max-height: 70vh; display: flex; flex-direction: column;">
+                    <h3 style="margin-bottom: 15px; color: var(--primary-olive);">Chọn đơn hàng đính kèm</h3>
+                    <div id="consultOrderList"
+                        style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Danh sách đơn hàng -->
+                    </div>
+                    <button type="button" onclick="closeModal('consultOrderModal')"
+                        style="margin-top: 15px; padding: 10px; border: 1px solid #ccc; background: #fff; border-radius: 8px; cursor: pointer;">Đóng</button>
+                </div>
+            </div>
+
+            <!-- ================= WISHLIST ================= -->
+            <div id="customer-wishlist" class="customer-section" style="display: none; padding: 20px;">
+                <h3
+                    style="font-family:'Playfair Display', serif; color:var(--primary-olive); font-size: 24px; margin-bottom: 20px;">
+                    Sản phẩm yêu thích</h3>
+                <div id="customerWishlistGrid" class="product-grid-new">
+                    <!-- Wishlist sẽ được render ở đây bằng JS -->
+                </div>
+            </div>
+
+            <!-- ================= GIỎ HÀNG & ĐẶT HÀNG ================= -->
+            <div id="customer-cart" class="customer-section" style="display: none; padding: 20px;">
+                <h3
+                    style="font-family:'Playfair Display', serif; color:var(--primary-olive); font-size: 24px; margin-bottom: 20px;">
+                    Giỏ hàng của bạn</h3>
+
+                <div class="cart-layout" style="display: flex; gap: 30px; align-items: flex-start;">
+                    <!-- BÊN TRÁI: Danh sách sản phẩm trong giỏ -->
+                    <div class="cart-items-container"
+                        style="flex: 2; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                        <div id="cartItemList" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="text-align: center; color: #999; padding: 20px;">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Đang tải giỏ hàng...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BÊN PHẢI: Tóm tắt đơn hàng -->
+                    <div class="cart-summary-container"
+                        style="flex: 1; max-width: 350px; height: fit-content; background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: sticky; top: 100px;">
+                        <h4 style="margin-bottom: 20px; font-size: 18px; color: #333; font-weight: 700;">Tóm tắt đơn
+                            hàng</h4>
+                        <div style="border-top: 1px solid #eee; padding-top: 20px; margin-bottom: 20px;">
+                            <div
+                                style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #666;">
+                                <span>Tạm tính:</span>
+                                <span id="summarySubtotal">0 đ</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; margin-bottom: 15px; color: #666;">
+                                <span>Phí vận chuyển:</span>
+                                <span>Miễn phí</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; font-weight: 700; font-size: 18px; color: #333; border-top: 1px dashed #ddd; padding-top: 15px;">
+                                <span>Tổng cộng:</span>
+                                <span id="summaryTotal">0 đ</span>
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="openCheckoutModal()"
+                            style="width: 100%; padding: 15px; background: var(--primary-olive-dark); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.3s;"><i
+                                class="fa-solid fa-credit-card"></i> Đặt hàng ngay</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: LỊCH SỬ ĐƠN HÀNG -->
+            <div id="order-history" class="customer-section" style="display: none; padding: 20px;">
+                <h3
+                    style="font-family: 'Playfair Display', serif; font-size: 28px; color: var(--primary-olive-dark); margin-bottom: 30px;">
+                    Lịch sử đơn hàng</h3>
+
+                <!-- Thanh trạng thái Tab -->
+                <div class="order-tabs"
+                    style="display: flex; background: #fff; padding: 15px 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 30px; justify-content: space-between; align-items: center;">
+                    <div class="order-tab active" data-status="pending" onclick="filterCustomerOrders('pending')">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <span>Chờ xác nhận</span>
+                    </div>
+                    <div class="order-tab" data-status="processing" onclick="filterCustomerOrders('processing')">
+                        <i class="fa-solid fa-box-open"></i>
+                        <span>Đã xác nhận</span>
+                    </div>
+                    <div class="order-tab" data-status="shipping" onclick="filterCustomerOrders('shipping')">
+                        <i class="fa-solid fa-truck-fast"></i>
+                        <span>Đang vận chuyển</span>
+                    </div>
+                    <div class="order-tab" data-status="completed" onclick="filterCustomerOrders('completed')">
+                        <i class="fa-solid fa-check-circle"></i>
+                        <span>Đã hoàn thành</span>
+                    </div>
+                    <div class="order-tab" data-status="cancelled" onclick="filterCustomerOrders('cancelled')">
+                        <i class="fa-solid fa-ban"></i>
+                        <span>Đơn hủy</span>
+                    </div>
+                </div>
+
+                <!-- Vùng chứa danh sách đơn hàng -->
+                <div id="customerOrdersContainer" style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- Sẽ render bằng JS -->
+                    <div style="text-align: center; color: #888; padding: 40px;">Đang tải dữ liệu đơn hàng...</div>
+                </div>
+            </div>
+
+            <!-- SECTION: KHIẾU NẠI & PHẢN HỒI -->
+            <div id="feedback-section" class="customer-section" style="display: none; padding: 20px;">
+                <h3
+                    style="font-family:'Playfair Display', serif; color:var(--primary-olive); font-size: 24px; margin-bottom: 20px;">
+                    Khiếu nại & Phản hồi</h3>
+
+                <div
+                    style="background:#fff; padding:30px; border-radius:15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                    <!-- Tabs -->
+                    <div style="display: flex; gap: 20px; border-bottom: 2px solid #eee; margin-bottom: 20px;">
+                        <h3 id="tab-new-fb" onclick="switchFbTab('new')"
+                            style="cursor: pointer; padding-bottom: 10px; border-bottom: 3px solid var(--primary-olive); color: var(--primary-olive); font-family: 'Playfair Display', serif;">
+                            Gửi phản hồi mới</h3>
+                        <h3 id="tab-history-fb" onclick="switchFbTab('history')"
+                            style="cursor: pointer; padding-bottom: 10px; border-bottom: 3px solid transparent; color: #999; font-family: 'Playfair Display', serif;">
+                            Lịch sử & Phản hồi</h3>
+                    </div>
+
+                    <!-- Tab: Gửi mới -->
+                    <div id="fb-new-container">
+                        <form id="customerFeedbackForm">
+                            <div class="form-group" style="margin-bottom:20px;">
+                                <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">Bạn muốn
+                                    phản hồi về điều gì? <span style="color:red;">*</span></label>
+                                <select id="fbType" required
+                                    style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; font-family:'Quicksand', sans-serif; font-size:15px;">
+                                    <option value="attitude">Thái độ phục vụ của nhân viên</option>
+                                    <option value="product_issue">Chất lượng sản phẩm</option>
+                                    <option value="payment_issue">Vấn đề thanh toán / Hoàn tiền</option>
+                                    <option value="other">Ý kiến đóng góp khác</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:25px;">
+                                <label style="display:block; margin-bottom:8px; font-weight:600; color:#333;">Nội dung
+                                    chi tiết <span style="color:red;">*</span></label>
+                                <textarea id="fbDescription" required rows="5"
+                                    placeholder="Mô tả cụ thể vấn đề bạn gặp phải..."
+                                    style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; font-family:'Quicksand', sans-serif; font-size:15px; resize:none;"></textarea>
+                            </div>
+                            <button type="submit"
+                                style="width:200px; padding:15px; background:var(--primary-olive); color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer; font-size:16px;">Gửi
+                                phản hồi</button>
+                        </form>
+                    </div>
+
+                    <!-- Tab: Lịch sử -->
+                    <div id="fb-history-container" style="display: none;">
+                        <div id="fb-history-list"
+                            style="max-height: 500px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                            <!-- History items -->
+                        </div>
+
+                        <!-- Chat view -->
+                        <div id="fb-chat-view" style="display: none;">
+                            <button type="button" onclick="backToHistory()"
+                                style="background: none; border: none; color: var(--primary-olive); font-weight: 600; cursor: pointer; margin-bottom: 10px;"><i
+                                    class="fa-solid fa-arrow-left"></i> Quay lại danh sách</button>
+                            <div id="fb-chat-thread"
+                                style="height: 400px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; padding: 15px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; background: #fafafa;">
+                                <!-- Messages -->
+                            </div>
+                            <form id="fbReplyForm" style="display: flex; gap: 10px;">
+                                <input type="hidden" id="fbReplyId">
+                                <input type="text" id="fbReplyText" placeholder="Nhập phản hồi tiếp theo..." required
+                                    style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                                <button type="submit"
+                                    style="padding: 10px 20px; background: var(--primary-olive); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">Gửi</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- SECTION: ĐÁNH GIÁ CỦA TÔI -->
+            <div id="customer-reviews" class="customer-section" style="display: none; padding: 20px;">
+                <h3
+                    style="font-family: 'Playfair Display', serif; font-size: 28px; color: var(--primary-olive-dark); margin-bottom: 30px;">
+                    Đánh giá của tôi</h3>
+
+                <div class="order-tabs"
+                    style="display: flex; background: #fff; padding: 15px 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 30px; justify-content: flex-start; gap: 40px; align-items: center;">
+                    <div class="order-tab active" data-rev="pending" onclick="switchReviewTab('pending')"
+                        style="cursor:pointer; display:flex; gap:10px; align-items:center;">
+                        <i class="fa-regular fa-comment-dots"></i>
+                        <span style="font-weight:600;">Chờ đánh giá</span>
+                    </div>
+                    <div class="order-tab" data-rev="done" onclick="switchReviewTab('done')"
+                        style="cursor:pointer; display:flex; gap:10px; align-items:center;">
+                        <i class="fa-solid fa-comment-dots"></i>
+                        <span style="font-weight:600;">Đã đánh giá</span>
+                    </div>
+                </div>
+
+                <div id="review-pending-list" style="display: flex; flex-direction: column; gap: 20px;">
+                    <!-- JS Render -->
+                </div>
+                <div id="review-done-list" style="display: none; flex-direction: column; gap: 20px;">
+                    <!-- JS Render -->
+                </div>
+            </div>
+
+            <!-- ================= THÔNG TIN CÁ NHÂN ================= -->
+            <div id="customer-profile" class="customer-section" style="display: none; padding: 20px;">
+                <h3
+                    style="font-family: 'Playfair Display', serif; font-size: 28px; color: var(--primary-olive-dark); margin-bottom: 24px;">
+                    Thông tin cá nhân</h3>
+
+                <div class="profile-page-layout">
+                    <!-- CỘT TRÁI: Avatar + Thông tin cơ bản -->
+                    <div
+                        style="display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px; align-self: flex-start;">
+
+                        <!-- Card Avatar & Thông tin -->
+                        <div class="profile-card">
+                            <div class="profile-card-title"><i class="fa-solid fa-circle-user"></i> Ảnh đại diện</div>
+
+                            <!-- Avatar -->
+                            <div class="profile-avatar-wrap" onclick="triggerAvatarUpload()">
+                                <img id="profileAvatarImg" src="" alt="Avatar">
+                                <div class="profile-avatar-overlay">
+                                    <i class="fa-solid fa-camera" style="font-size:20px;"></i>
+                                    <span>Đổi ảnh</span>
+                                </div>
+                            </div>
+                            <input type="file" id="profileAvatarInput" style="display:none;" accept="image/*"
+                                onchange="handleAvatarUpload(event)">
+                            <p style="text-align:center; font-size:12px; color:#aaa; margin-bottom: 20px;">Nhấp vào ảnh
+                                để thay đổi</p>
+
+                            <!-- Email & Phone (chỉ đọc) -->
+                            <div class="profile-form-group">
+                                <label>Email</label>
+                                <input type="email" id="profileEmail" class="profile-input" readonly>
+                            </div>
+                            <div class="profile-form-group">
+                                <label>Số điện thoại</label>
+                                <input type="text" id="profilePhone" class="profile-input" readonly>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- CỘT PHẢI: Thông tin cá nhân + Địa chỉ + Đổi mật khẩu -->
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+
+                        <!-- Card: Thông tin cá nhân -->
+                        <div class="profile-card">
+                            <div class="profile-card-title"><i class="fa-solid fa-id-card"></i> Thông tin cá nhân</div>
+
+                            <div class="profile-form-group">
+                                <label>Họ và tên <span style="color:#e53e3e">*</span></label>
+                                <input type="text" id="profileFullName" class="profile-input"
+                                    placeholder="Nhập họ và tên">
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                                <div class="profile-form-group">
+                                    <label>Ngày sinh</label>
+                                    <input type="date" id="profileBirthDate" class="profile-input">
+                                </div>
+                                <div class="profile-form-group">
+                                    <label>Giới tính</label>
+                                    <select id="profileGender" class="profile-select">
+                                        <option value="">-- Chọn --</option>
+                                        <option value="male">Nam</option>
+                                        <option value="female">Nữ</option>
+                                        <option value="other">Không muốn tiết lộ</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label>Giới thiệu bản thân</label>
+                                <textarea id="profileIntro" class="profile-textarea"
+                                    placeholder="Viết vài dòng về bạn..."></textarea>
+                            </div>
+
+                            <button class="btn-profile-save" id="btnSaveProfile" onclick="saveCustomerProfile()">
+                                <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
+                            </button>
+                        </div>
+
+                        <!-- Card: Địa chỉ giao hàng -->
+                        <div class="profile-card">
+                            <div class="profile-card-title"><i class="fa-solid fa-location-dot"></i> Địa chỉ giao hàng
+                            </div>
+                            <div class="profile-address-list" id="profileAddressList">
+                                <div style="text-align:center; padding: 20px; color: #aaa;">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Đang tải...
+                                </div>
+                            </div>
+                            <button class="btn-add-address" onclick="openAddAddress()">
+                                <i class="fa-solid fa-plus"></i> Thêm địa chỉ mới
+                            </button>
+                        </div>
+
+                        <!-- Card: Đổi mật khẩu -->
+                        <div class="profile-card">
+                            <div class="profile-card-title"><i class="fa-solid fa-lock"></i> Đổi mật khẩu</div>
+
+                            <div class="profile-form-group">
+                                <label>Mật khẩu hiện tại</label>
+                                <div class="profile-pw-wrap">
+                                    <input type="password" id="profileOldPassword" class="profile-input"
+                                        placeholder="Nhập mật khẩu hiện tại">
+                                    <i class="fa-regular fa-eye profile-pw-toggle"
+                                        onclick="togglePasswordVisibility('profileOldPassword', this)"></i>
+                                </div>
+                            </div>
+                            <div class="profile-form-group">
+                                <label>Mật khẩu mới</label>
+                                <div class="profile-pw-wrap">
+                                    <input type="password" id="profileNewPassword" class="profile-input"
+                                        placeholder="Tối thiểu 8 ký tự, 1 HOA, 1 số, 1 ký tự đặc biệt">
+                                    <i class="fa-regular fa-eye profile-pw-toggle"
+                                        onclick="togglePasswordVisibility('profileNewPassword', this)"></i>
+                                </div>
+                            </div>
+                            <div class="profile-form-group">
+                                <label>Xác nhận mật khẩu mới</label>
+                                <div class="profile-pw-wrap">
+                                    <input type="password" id="profileConfirmPassword" class="profile-input"
+                                        placeholder="Nhập lại mật khẩu mới">
+                                    <i class="fa-regular fa-eye profile-pw-toggle"
+                                        onclick="togglePasswordVisibility('profileConfirmPassword', this)"></i>
+                                </div>
+                            </div>
+
+                            <button class="btn-profile-save" id="btnChangePassword" onclick="changeCustomerPassword()">
+                                <i class="fa-solid fa-lock"></i> Đổi mật khẩu
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- END THÔNG TIN CÁ NHÂN -->
+
+        </main>
+    </div>
+
+    <!-- Toast cho profile -->
+    <div id="profileToast" class="profile-toast"></div>
+
+    <!-- MODAL THÊM/SỬA ĐỊA CHỈ -->
+    <div id="profileAddressModal" class="profile-modal-overlay">
+        <div class="profile-modal-box">
+            <span class="profile-modal-close" onclick="closeAddressModal()">&times;</span>
+            <h3 id="addressModalTitle">Thêm địa chỉ mới</h3>
+
+            <div class="profile-form-group">
+                <label>Nhãn địa chỉ</label>
+                <select id="addrFormLabel" class="profile-select">
+                    <option value="Nhà">🏠 Nhà</option>
+                    <option value="Văn phòng">💼 Văn phòng</option>
+                    <option value="Khác">📍 Khác</option>
+                </select>
+            </div>
+
+            <div class="profile-addr-row">
+                <div class="profile-form-group">
+                    <label>Họ tên người nhận <span style="color:#e53e3e">*</span></label>
+                    <input type="text" id="addrFormFullName" class="profile-input" placeholder="Tên người nhận">
+                </div>
+                <div class="profile-form-group">
+                    <label>Số điện thoại <span style="color:#e53e3e">*</span></label>
+                    <input type="text" id="addrFormPhone" class="profile-input" placeholder="SĐT người nhận">
+                </div>
+            </div>
+
+            <div class="profile-form-group">
+                <label>Tỉnh / Thành phố <span style="color:#e53e3e">*</span></label>
+                <select id="addrFormProvince" class="profile-select" onchange="loadDistrictsForModal(this.value)">
+                    <option value="">-- Chọn Tỉnh/Thành --</option>
+                </select>
+            </div>
+
+            <div class="profile-addr-row">
+                <div class="profile-form-group">
+                    <label>Quận / Huyện <span style="color:#e53e3e">*</span></label>
+                    <select id="addrFormDistrict" class="profile-select" disabled
+                        onchange="loadWardsForModal(this.value)">
+                        <option value="">-- Chọn Quận/Huyện --</option>
+                    </select>
+                </div>
+                <div class="profile-form-group">
+                    <label>Phường / Xã <span style="color:#e53e3e">*</span></label>
+                    <select id="addrFormWard" class="profile-select" disabled>
+                        <option value="">-- Chọn Phường/Xã --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="profile-form-group">
+                <label>Địa chỉ chi tiết (Số nhà, tên đường) <span style="color:#e53e3e">*</span></label>
+                <input type="text" id="addrFormDetail" class="profile-input" placeholder="VD: 123 Đường Lê Lợi">
+            </div>
+
+            <div class="profile-checkbox-row">
+                <input type="checkbox" id="addrFormIsDefault">
+                <label for="addrFormIsDefault"><i class="fa-solid fa-star"
+                        style="color: var(--primary-olive); font-size:13px;"></i> Đặt làm địa chỉ mặc định</label>
+            </div>
+
+            <button class="btn-profile-save" id="btnSaveAddress" onclick="saveAddress()">
+                <i class="fa-solid fa-floppy-disk"></i> Lưu địa chỉ
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL ĐÁNH GIÁ SẢN PHẨM ================= -->
+    <div id="reviewModal" class="modal"
+        style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+        <div class="modal-content"
+            style="background:#fff; margin:5% auto; padding:30px; border-radius:15px; width:90%; max-width:500px; position:relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <span class="close-btn" onclick="closeReviewModal()"
+                style="position:absolute; right:20px; top:15px; font-size:28px; cursor:pointer; color:#999;">&times;</span>
+            <h3
+                style="font-family:'Playfair Display', serif; color:var(--primary-olive); font-size: 24px; margin-bottom: 20px;">
+                Đánh giá sản phẩm</h3>
+            <form id="reviewForm">
+                <input type="hidden" id="reviewId">
+                <input type="hidden" id="reviewOrderId">
+                <input type="hidden" id="reviewProductId">
+                <div class="form-group" style="margin-bottom:20px; text-align: center;">
+                    <p style="font-weight: 600; margin-bottom: 10px;">Bạn thấy sản phẩm này thế nào?</p>
+                    <div id="star-rating"
+                        style="font-size: 30px; color: #ddd; cursor: pointer; display: flex; justify-content: center; gap: 10px;">
+                        <i class="fa-solid fa-star" data-value="1"></i>
+                        <i class="fa-solid fa-star" data-value="2"></i>
+                        <i class="fa-solid fa-star" data-value="3"></i>
+                        <i class="fa-solid fa-star" data-value="4"></i>
+                        <i class="fa-solid fa-star" data-value="5"></i>
+                    </div>
+                    <input type="hidden" id="ratingValue" value="5">
+                </div>
+                <div class="form-group" style="margin-bottom:20px;">
+                    <label style="display:block; margin-bottom:8px; font-weight:600;">Nhận xét của bạn</label>
+                    <textarea id="reviewComment" required rows="4" placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..."
+                        style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; font-family:inherit; resize:none;"></textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:20px;">
+                    <label style="display:block; margin-bottom:8px; font-weight:600;">Hình ảnh thực tế (Tối đa 3
+                        ảnh)</label>
+                    <input type="file" id="reviewImages" multiple accept="image/*"
+                        style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; font-family:inherit;">
+                    <div id="reviewImagePreview" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                    </div>
+                </div>
+                <button type="submit" id="btnSubmitReview"
+                    style="width:100%; padding:15px; background:var(--primary-olive); color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Gửi
+                    đánh giá</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL XÁC NHẬN (CONFIRM) -->
+    <div id="confirmModal" class="modal"
+        style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content"
+            style="background-color: #fefefe; margin: 15% auto; padding: 30px; border: 1px solid #888; width: 400px; border-radius: 12px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+            <div style="font-size: 40px; color: #f25c3a; margin-bottom: 10px;"><i
+                    class="fa-solid fa-circle-exclamation"></i></div>
+            <h3 style="font-family:'Playfair Display', serif; color:#333; margin-bottom: 15px;">Xác nhận xoá</h3>
+            <p style="margin-bottom: 25px; color: #555;" id="confirmMessage">Bạn có chắc muốn xoá sản phẩm này khỏi giỏ
+                hàng?</p>
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button onclick="closeConfirmModal()"
+                    style="padding: 10px 25px; background: var(--primary-olive-light); color: var(--primary-olive-dark); border: 1px solid var(--primary-olive); border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;">Hủy</button>
+                <button onclick="executeRemoveCartItem()"
+                    style="padding: 10px 25px; background: #f25c3a; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;">Đồng
+                    ý xoá</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL THÔNG BÁO (ALERT) -->
+    <div id="alertModal" class="modal"
+        style="display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content"
+            style="background-color: #fefefe; margin: 15% auto; padding: 30px; border: 1px solid #888; width: 400px; border-radius: 12px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+            <div id="alertIcon" style="font-size: 40px; color: var(--primary-olive-dark); margin-bottom: 10px;"><i
+                    class="fa-solid fa-circle-info"></i></div>
+            <h3 style="font-family:'Playfair Display', serif; color:#333; margin-bottom: 15px;" id="alertTitle">Thông
+                báo</h3>
+            <p style="margin-bottom: 25px; color: #555;" id="alertMessage"></p>
+            <div style="display: flex; justify-content: center;">
+                <button id="btnAlertClose"
+                    style="padding: 10px 35px; background: var(--primary-olive-dark); color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL XÁC NHẬN THOÁT FORM -->
+    <div id="exitConfirmModal" class="modal"
+        style="display: none; position: fixed; z-index: 9999999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content"
+            style="background-color: #fefefe; margin: 15% auto; padding: 30px; border: 1px solid #888; width: 400px; border-radius: 12px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+            <div style="font-size: 40px; color: #f25c3a; margin-bottom: 10px;"><i
+                    class="fa-solid fa-circle-question"></i></div>
+            <h3 style="font-family:'Playfair Display', serif; color:#333; margin-bottom: 15px;">Xác nhận thoát</h3>
+            <p style="margin-bottom: 25px; color: #555;">Các thông tin bạn vừa nhập có thể sẽ không được lưu. Bạn có
+                chắc chắn muốn thoát?</p>
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button id="btnContinueEdit"
+                    style="padding: 10px 20px; background: var(--primary-olive-dark); color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;">Tiếp
+                    tục</button>
+                <button id="btnConfirmExit"
+                    style="padding: 10px 20px; background: var(--primary-olive-light); color: #f25c3a; border: 1px solid #f25c3a; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;">Xác
+                    nhận thoát</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ĐẶT HÀNG (CHECKOUT) -->
+    <div id="checkoutModal" class="modal"
+        style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content"
+            style="background-color: #fefefe; margin: 5% auto; padding: 30px; border: 1px solid #888; width: 800px; max-width: 95%; border-radius: 12px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <span class="close" onclick="attemptCloseCheckoutModal()"
+                style="position: absolute; right: 20px; top: 15px; color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h3
+                style="font-family:'Playfair Display', serif; color:var(--primary-olive); margin-bottom: 25px; font-size: 22px;">
+                Thông tin đặt hàng</h3>
+
+            <form id="checkoutForm">
+                <div id="checkoutItemsList"
+                    style="margin-bottom: 25px; border-bottom: 1px dashed #ddd; padding-bottom: 15px; max-height: 250px; overflow-y: auto;">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <!-- Cột 1: Địa chỉ -->
+                    <div>
+                        <h4 style="margin-bottom: 15px; font-size: 16px; color: #333;"><i
+                                class="fa-solid fa-location-dot" style="color: var(--primary-olive);"></i> 1. Địa chỉ
+                            giao hàng</h4>
+
+                        <!-- Địa chỉ đã lưu -->
+                        <div id="savedAddressesCheckout" style="display:none; margin-bottom: 16px;">
+                            <div
+                                style="font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                                <i class="fa-solid fa-bookmark"></i> Địa chỉ đã lưu
+                            </div>
+                            <div id="savedAddressList"
+                                style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding-right: 4px;">
+                            </div>
+                            <div style="border-bottom: 1px dashed #ddd; margin: 14px 0;"></div>
+                            <div
+                                style="font-size: 12px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+                                <i class="fa-solid fa-pen-to-square"></i> Hoặc nhập địa chỉ khác
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <input type="text" id="checkoutName" placeholder="Họ và tên người nhận" required
+                                style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <input type="text" id="checkoutPhone" placeholder="Số điện thoại" required
+                                style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <select id="checkoutProvince" onchange="fetchDistricts(this.value)" required
+                                style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+                                <option value="">Chọn Tỉnh/Thành</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <select id="checkoutDistrict" onchange="fetchWards(this.value)" required
+                                style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; width: 50%;">
+                                <option value="">Chọn Quận/Huyện</option>
+                            </select>
+                            <select id="checkoutWard" required
+                                style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; width: 50%;">
+                                <option value="">Chọn Phường/Xã</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <input type="text" id="checkoutDetail" placeholder="Số nhà, tên đường..." required
+                                style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <input type="text" id="checkoutNote" placeholder="Ghi chú (Tùy chọn)"
+                                style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+                        </div>
+                    </div>
+
+                    <!-- Cột 2: Thanh toán -->
+                    <div>
+                        <h4 style="margin-bottom: 15px; font-size: 16px; color: #333;"><i
+                                class="fa-solid fa-credit-card" style="color: var(--primary-olive);"></i> 2. Thanh toán
+                        </h4>
+
+                        <!-- Mã giảm giá -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <input type="text" id="checkoutPromoCode" placeholder="Nhập mã giảm giá"
+                                style="flex: 1; padding: 10px 15px; border: 1px dashed var(--primary-olive); border-radius: 8px; text-transform: uppercase; font-family: inherit;">
+                            <button type="button" onclick="applyPromoCode()"
+                                style="padding: 10px 20px; background: var(--primary-olive-light); color: var(--primary-olive-dark); border: 1px solid var(--primary-olive); border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap;">Áp
+                                dụng</button>
+                        </div>
+
+                        <div
+                            style="background: #fafafa; padding: 15px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 25px;">
+                            <div
+                                style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #666; font-size: 14px;">
+                                <span>Đã giảm giá:</span>
+                                <span id="summaryDiscount" style="color: #f25c3a; font-weight: bold;">0 đ</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; color: #333; border-top: 1px dashed #ddd; padding-top: 10px;">
+                                <span>Tổng thanh toán:</span>
+                                <span id="summaryModalTotal"
+                                    style="color: var(--primary-olive-dark); font-size: 18px;">0 đ</span>
+                            </div>
+                        </div>
+
+                        <!-- Phương thức thanh toán -->
+                        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
+                            <label
+                                style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 15px; border: 1px solid #ddd; border-radius: 8px; transition: 0.2s;">
+                                <input type="radio" name="paymentMethod" value="cod" checked
+                                    style="width: 18px; height: 18px; accent-color: var(--primary-olive);">
+                                <span style="font-weight: 500;">Thanh toán khi nhận hàng (COD)</span>
+                            </label>
+                            <label
+                                style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 15px; border: 1px solid #ddd; border-radius: 8px; transition: 0.2s;">
+                                <input type="radio" name="paymentMethod" value="online"
+                                    style="width: 18px; height: 18px; accent-color: var(--primary-olive);">
+                                <span style="font-weight: 500;">Thanh toán VNPay/MoMo</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" id="btnConfirmOrder"
+                            style="width: 100%; padding: 16px; background: var(--primary-olive-dark); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: auto;"><i
+                                class="fa-solid fa-check"></i> Xác nhận đặt hàng</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CHI TIẾT ĐƠN HÀNG -->
+    <div id="orderDetailModal" class="modal"
+        style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content"
+            style="background-color: #fefefe; margin: 5% auto; padding: 30px; border: 1px solid #888; width: 700px; max-width: 95%; border-radius: 12px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <span class="close" onclick="closeOrderDetailModal()"
+                style="position: absolute; right: 20px; top: 15px; color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h3
+                style="font-family:'Playfair Display', serif; color:var(--primary-olive); margin-bottom: 25px; font-size: 22px;">
+                Chi tiết đơn hàng: <span id="modalOrderId" style="color: #333; font-weight: bold;"></span></h3>
+
+            <div id="orderDetailContent" style="margin-bottom: 30px; font-size: 15px; color: #444; line-height: 1.6;">
+                <!-- Nội dung chi tiết đơn hàng load bằng JS -->
+            </div>
+
+            <!-- Vùng nút chức năng: Sửa địa chỉ & Huỷ đơn (chỉ hiện khi pending) -->
+            <div id="orderDetailActions"
+                style="display: none; justify-content: center; gap: 15px; border-top: 1px dashed #ddd; padding-top: 20px;">
+                <button id="btnEditAddress"
+                    style="padding: 12px 25px; background: var(--primary-olive-light); color: var(--primary-olive-dark); border: 1px solid var(--primary-olive); border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;"><i
+                        class="fa-solid fa-pen-to-square"></i> Cập nhật địa chỉ</button>
+                <button id="btnCancelOrder"
+                    style="padding: 12px 25px; background: #f25c3a; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;"><i
+                        class="fa-solid fa-ban"></i> Huỷ đơn hàng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SỬA ĐỊA CHỈ -->
+    <div id="editAddressModal" class="modal"
+        style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content"
+            style="background-color: #fefefe; margin: 10% auto; padding: 30px; border: 1px solid #888; width: 500px; max-width: 95%; border-radius: 12px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <span class="close" onclick="attemptCloseEditAddressModal()"
+                style="position: absolute; right: 20px; top: 15px; color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h3
+                style="font-family:'Playfair Display', serif; color:var(--primary-olive); margin-bottom: 25px; font-size: 22px;">
+                Cập nhật thông tin nhận hàng</h3>
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <input type="text" id="editCustomerName" placeholder="Tên người nhận"
+                    style="flex: 1; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+                <input type="text" id="editCustomerPhone" placeholder="Số điện thoại"
+                    style="flex: 1; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+            </div>
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <select id="editProvince"
+                    style="flex: 1; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+                    <option value="">Chọn Tỉnh/Thành</option>
+                </select>
+                <select id="editDistrict"
+                    style="flex: 1; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;"
+                    disabled>
+                    <option value="">Chọn Quận/Huyện</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <select id="editWard"
+                    style="flex: 1; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;"
+                    disabled>
+                    <option value="">Chọn Phường/Xã</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <input type="text" id="editAddressDetail" placeholder="Số nhà, tên đường.."
+                    style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px;">
+                <button type="button" onclick="attemptCloseEditAddressModal()"
+                    style="padding: 10px 20px; background: var(--primary-olive-light); color: var(--primary-olive-dark); border: 1px solid var(--primary-olive); border-radius: 8px; font-weight: 600; cursor: pointer;">Huỷ</button>
+                <button id="btnSaveEditAddress"
+                    style="padding: 10px 20px; background: var(--primary-olive-dark); color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Lưu
+                    địa chỉ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL XÁC NHẬN HUỶ ĐƠN -->
+    <div id="cancelOrderConfirmModal" class="modal"
+        style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content"
+            style="background-color: #fefefe; margin: 15% auto; padding: 30px; border: 1px solid #888; width: 400px; border-radius: 12px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+            <div style="font-size: 40px; color: #f25c3a; margin-bottom: 10px;"><i
+                    class="fa-solid fa-circle-exclamation"></i></div>
+            <h3 style="font-family:'Playfair Display', serif; color:#333; margin-bottom: 15px;">Xác nhận huỷ đơn</h3>
+            <p style="margin-bottom: 25px; color: #555;">Bạn có chắc chắn muốn huỷ đơn hàng này không?</p>
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button onclick="document.getElementById('cancelOrderConfirmModal').style.display='none'"
+                    style="padding: 10px 25px; background: var(--primary-olive-light); color: var(--primary-olive-dark); border: 1px solid var(--primary-olive); border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;">Không
+                    huỷ</button>
+                <button id="btnConfirmCancelOrder"
+                    style="padding: 10px 25px; background: #f25c3a; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;">Đồng
+                    ý huỷ</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="../js/main.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/customer_products.js"></script>
+    <script src="../js/customer_cart.js"></script>
+    <script src="../js/customer_orders.js"></script>
+    <script src="../js/customer_reviews.js"></script>
+    <script src="../js/customer_complaints.js"></script>
+    <script src="../js/customer_consultation.js"></script>
+    <script src="../js/customer_profile.js"></script>
+    <script src="../js/home_widgets.js"></script>
+    <!-- Lightbox Modal -->
+    <div id="lightboxModal" class="modal"
+        style="display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9);">
+        <span class="close-btn" onclick="closeLightbox()"
+            style="position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 10;">&times;</span>
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; position: relative;"
+            onclick="if(event.target === this) closeLightbox()">
+            <i class="fa-solid fa-chevron-left" onclick="changeLightboxImage(-1)"
+                style="position: absolute; left: 30px; color: #fff; font-size: 40px; cursor: pointer; padding: 20px;"></i>
+            <img class="modal-content" id="lightboxImg"
+                style="max-height: 90vh; max-width: 90vw; object-fit: contain; margin: auto;">
+            <i class="fa-solid fa-chevron-right" onclick="changeLightboxImage(1)"
+                style="position: absolute; right: 30px; color: #fff; font-size: 40px; cursor: pointer; padding: 20px;"></i>
+        </div>
+    </div>
+</body>
+</html>

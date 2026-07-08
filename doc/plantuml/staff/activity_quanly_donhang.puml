@@ -1,0 +1,34 @@
+@startuml ActivityQuanLyDonHang
+|Nhân viên|
+start
+:Truy cập trang Quản Lý Đơn Hàng;
+|Hệ thống|
+:Gửi yêu cầu tải danh sách đơn hàng lên Server;
+:Truy vấn danh sách đơn hàng từ bảng Order trong CSDL;
+:Trả về danh sách đơn hàng;
+:Hiển thị danh sách đơn hàng trên giao diện;
+|Nhân viên|
+:Chọn một đơn hàng để xem chi tiết;
+|Hệ thống|
+:Truy vấn thông tin chi tiết đơn hàng & khách hàng từ CSDL;
+:Hiển thị chi tiết đơn hàng (sản phẩm, số lượng, tổng tiền, địa chỉ giao);
+|Nhân viên|
+if (Muốn cập nhật trạng thái đơn hàng?) then (Không)
+    stop
+else (Có)
+    :Chọn trạng thái mới (Confirmed / Shipping / Completed / Cancelled);
+    :Nhấn nút "Cập Nhật Trạng Thái";
+    |Hệ thống|
+    :Gửi yêu cầu cập nhật lên Server;
+    if (Trạng thái mới là 'Cancelled'?) then (Có)
+        :Cập nhật trạng thái đơn hàng thành 'Cancelled' trong CSDL;
+        :Hoàn trả số lượng sản phẩm trong đơn hàng vào kho (Product);
+    else (Không)
+        :Cập nhật trạng thái đơn hàng tương ứng trong CSDL;
+    endif
+    :Trả về phản hồi cập nhật thành công (200);
+    :Làm mới giao diện và hiển thị Toast thành công;
+    |Nhân viên|
+    stop
+endif
+@enduml

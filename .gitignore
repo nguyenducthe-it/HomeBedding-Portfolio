@@ -1,0 +1,45 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+web_modules/
+
+# Local env files and secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Uploads and User data
+uploads/
+mongodb_backup/
+
+# Logs and Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+.pnpm-debug.log*
+
+# Editor and IDE configurations
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Scratch and Build temporary directories
+scratch/
+out/
+dist/
+build/
+temp/
+tmp/

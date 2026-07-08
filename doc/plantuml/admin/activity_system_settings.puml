@@ -1,0 +1,46 @@
+@startuml ActivitySystemSettings
+|Quản trị viên|
+start
+:Truy cập trang Cài đặt hệ thống;
+|Hệ thống|
+:Tải các cấu hình hiện tại từ CSDL (bảng Setting);
+:Hiển thị giao diện cấu hình (màu sắc, sao lưu, khôi phục);
+|Quản trị viên|
+if (Chọn hành động cấu hình?) then (Thay đổi màu hệ thống)
+    :Chọn bảng màu chủ đạo & màu phụ mới;
+    :Nhấn nút "Lưu Cấu Hình Màu";
+    |Hệ thống|
+    :Gửi yêu cầu lưu màu sắc lên Server;
+    :Cập nhật bản ghi màu sắc trong CSDL bảng Setting;
+    :Trả về phản hồi cập nhật thành công (200);
+    :Thay đổi biến CSS hệ thống và hiển thị Toast thành công;
+    |Quản trị viên|
+    stop
+elseif (Sao lưu dữ liệu (Backup)) then (Có)
+    |Quản trị viên|
+    :Nhấn nút "Sao Lưu Dữ Liệu";
+    |Hệ thống|
+    :Gửi yêu cầu sao lưu lên Server;
+    :Thực thi lệnh mongodump / xuất file dữ liệu;
+    :Lưu lịch sử sao lưu (đường dẫn, thời gian) vào CSDL bảng Setting;
+    :Trả về phản hồi sao lưu thành công (200);
+    :Cập nhật danh sách các bản sao lưu hiển thị và báo Toast thành công;
+    |Quản trị viên|
+    stop
+elseif (Khôi phục dữ liệu (Restore)) then (Có)
+    |Quản trị viên|
+    :Chọn bản sao lưu cũ trong danh sách;
+    :Nhấn nút "Khôi Phục Dữ Liệu";
+    :Xác nhận đồng ý trên hộp thoại cảnh báo;
+    |Hệ thống|
+    :Gửi yêu cầu khôi phục lên Server;
+    :Thực thi lệnh mongorestore / nạp lại dữ liệu;
+    :Ghi nhận lịch sử khôi phục dữ liệu vào CSDL;
+    :Trả về phản hồi khôi phục thành công (200);
+    :Hiển thị Toast thành công và tự động tải lại (Reload) trang web;
+    |Quản trị viên|
+    stop
+else (Chỉ xem cài đặt)
+    stop
+endif
+@enduml

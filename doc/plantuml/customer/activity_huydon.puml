@@ -1,0 +1,43 @@
+@startuml ActivityHuyDon
+|Khách hàng|
+start
+:Mở trang Lịch sử đơn hàng;
+:Nhấp chọn nút "Hủy đơn" trên đơn hàng pending;
+|Hệ thống|
+:Hiển thị Custom Dialog xác nhận hủy đơn;
+|Khách hàng|
+if (Chọn Đồng ý?) then (Không)
+    |Hệ thống|
+    :Đóng hộp thoại, giữ nguyên đơn hàng;
+    |Khách hàng|
+    stop
+else (Có)
+    |Hệ thống|
+    :Gửi yêu cầu hủy đơn hàng lên Server;
+    :Tìm đơn hàng trong CSDL;
+    if (Tìm thấy đơn hàng?) then (Không)
+        :Trả về lỗi 404;
+        :Hiển thị Toast báo lỗi;
+        |Khách hàng|
+        stop
+    else (Có)
+        |Hệ thống|
+        if (Trạng thái đơn hàng là 'pending'?) then (Không)
+            :Trả về lỗi 400 (Chỉ hủy đơn pending);
+            :Hiển thị Toast thông báo lỗi;
+            |Khách hàng|
+            stop
+        else (Có)
+            |Hệ thống|
+            :Hoàn lại số lượng tồn kho cho sản phẩm;
+            :Cập nhật status='cancelled', cancelledBy='Khách hàng';
+            :Lưu thông tin đơn hàng vào CSDL;
+            :Trả về phản hồi 200 thành công;
+            :Cập nhật giao diện vẽ lại trạng thái mới;
+            :Hiển thị Toast thông báo hủy thành công;
+            |Khách hàng|
+            stop
+        endif
+    endif
+endif
+@enduml

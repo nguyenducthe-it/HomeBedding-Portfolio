@@ -1,0 +1,61 @@
+@startuml ActivityQuanLySP
+|Quản trị viên|
+start
+:Truy cập trang Quản lý sản phẩm;
+|Hệ thống|
+:Tải danh sách sản phẩm hiện tại;
+:Hiển thị danh sách sản phẩm;
+|Quản trị viên|
+if (Chọn thao tác CRUD?) then (Thêm sản phẩm mới)
+    :Nhấn nút "Thêm Sản Phẩm";
+    :Nhập thông tin sản phẩm (Tên, Giá, Số lượng kho, Mô tả, Ảnh);
+    :Nhấn nút "Lưu";
+    |Hệ thống|
+    :Gửi dữ liệu sản phẩm mới lên Server;
+    if (Tên trống hoặc Giá nhỏ hơn 0?) then (Có)
+        :Trả về lỗi dữ liệu không hợp lệ (400);
+        :Hiển thị Toast báo lỗi;
+        |Quản trị viên|
+        stop
+    else (Không)
+        |Hệ thống|
+        :Lưu sản phẩm mới vào CSDL;
+        :Trả về phản hồi thêm thành công (201);
+        :Làm mới danh sách sản phẩm và hiển thị Toast thành công;
+        |Quản trị viên|
+        stop
+    endif
+elseif (Sửa sản phẩm) then (Có)
+    |Quản trị viên|
+    :Chọn sản phẩm cần sửa từ danh sách;
+    :Thay đổi thông tin sản phẩm trên form;
+    :Nhấn nút "Cập Nhật";
+    |Hệ thống|
+    :Gửi yêu cầu cập nhật lên Server;
+    :Cập nhật bản ghi sản phẩm tương ứng trong CSDL;
+    :Trả về phản hồi cập nhật thành công (200);
+    :Làm mới danh sách sản phẩm và hiển thị Toast thành công;
+    |Quản trị viên|
+    stop
+elseif (Xóa sản phẩm) then (Có)
+    |Quản trị viên|
+    :Chọn sản phẩm cần xóa;
+    :Nhấn nút "Xóa";
+    :Xác nhận "Đồng ý xóa" trên hộp thoại;
+    |Hệ thống|
+    :Gửi yêu cầu xóa lên Server;
+    :Xóa bản ghi sản phẩm khỏi CSDL;
+    :Trả về phản hồi xóa thành công (200);
+    :Cập nhật danh sách sản phẩm và hiển thị Toast thành công;
+    |Quản trị viên|
+    stop
+else (Chỉ tìm kiếm/Xem danh sách)
+    |Quản trị viên|
+    :Nhập từ khóa tìm kiếm hoặc lọc danh mục;
+    |Hệ thống|
+    :Truy vấn danh sách sản phẩm thỏa mãn điều kiện lọc;
+    :Hiển thị danh sách sản phẩm tương ứng lên màn hình;
+    |Quản trị viên|
+    stop
+endif
+@enduml

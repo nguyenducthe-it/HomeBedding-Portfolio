@@ -1,0 +1,74 @@
+@startuml SequenceQuanLyTaiKhoan
+autonumber
+actor "Quản trị viên" as Admin
+boundary "Giao diện Tài Khoản" as UserAccountUI
+control "Điều khiển Tài Khoản" as UserAccountCtrl
+database "CSDL" as DB
+
+Admin -> UserAccountUI: Truy cập mục Quản lý tài khoản người dùng
+activate UserAccountUI
+UserAccountUI -> UserAccountCtrl: Yêu cầu lấy danh sách tài khoản (search, roleFilter)
+activate UserAccountCtrl
+UserAccountCtrl -> DB: Lấy danh sách tài khoản (User.find)
+activate DB
+DB --> UserAccountCtrl: Trả về danh sách người dùng
+deactivate DB
+UserAccountCtrl --> UserAccountUI: Phản hồi danh sách tài khoản
+deactivate UserAccountCtrl
+UserAccountUI -> Admin: Hiển thị danh sách tài khoản kèm các nút chức năng CRUD
+
+opt Tạo tài khoản người dùng mới (Nhân viên/Khách hàng)
+    Admin -> UserAccountUI: Nhấn nút "Tạo Tài Khoản" và nhập (fullName, email, phone, role, password)
+    Admin -> UserAccountUI: Nhấn nút "Lưu"
+    UserAccountUI -> UserAccountCtrl: Gửi yêu cầu tạo tài khoản (POST /api/users)
+    activate UserAccountCtrl
+    
+    alt Dữ liệu không hợp lệ (Ví dụ: Trùng Email/SĐT hoặc trường bắt buộc trống)
+        UserAccountCtrl -> DB: Tìm kiếm tài khoản trùng lặp theo Email/SĐT
+        activate DB
+        DB --> UserAccountCtrl: Trả về kết quả trùng lặp
+        deactivate DB
+        UserAccountCtrl --> UserAccountUI: Phản hồi lỗi 400 (Email hoặc Số điện thoại đã được sử dụng)
+        UserAccountUI -> Admin: Hiển thị Toast thông báo lỗi tạo tài khoản
+    else Dữ liệu hợp lệ
+        UserAccountCtrl -> UserAccountCtrl: Mã hóa mật khẩu bằng bcryptjs
+        UserAccountCtrl -> DB: Lưu tài liệu User mới
+        activate DB
+        DB --> UserAccountCtrl: Xác nhận lưu thành công
+        deactivate DB
+        UserAccountCtrl --> UserAccountUI: Phản hồi 201 (Tạo tài khoản thành công)
+        deactivate UserAccountCtrl
+        UserAccountUI -> Admin: Hiển thị Toast thành công & làm mới danh sách tài khoản
+    end
+end
+
+opt Sửa thông tin / Đổi vai trò (role) tài khoản
+    Admin -> UserAccountUI: Chọn tài khoản, thay đổi thông tin hoặc vai trò (role: customer/staff/admin)
+    Admin -> UserAccountUI: Nhấn nút "Cập Nhật"
+    UserAccountUI -> UserAccountCtrl: Gửi yêu cầu cập nhật (PUT /api/users/:id, updateData)
+    activate UserAccountCtrl
+    UserAccountCtrl -> DB: Cập nhật thông tin User theo ID trong CSDL
+    activate DB
+    DB --> UserAccountCtrl: Trả về User đã cập nhật
+    deactivate DB
+    UserAccountCtrl --> UserAccountUI: Phản hồi 200 (Cập nhật tài khoản thành công)
+    deactivate UserAccountCtrl
+    UserAccountUI -> Admin: Hiển thị Toast thành công & cập nhật lại danh sách hiển thị
+end
+
+opt Xóa tài khoản người dùng
+    Admin -> UserAccountUI: Chọn tài khoản & nhấn nút "Xóa"
+    UserAccountUI -> Admin: Hiển thị hộp thoại xác nhận xóa
+    Admin -> UserAccountUI: Xác nhận "Đồng ý xóa"
+    UserAccountUI -> UserAccountCtrl: Gửi yêu cầu xóa tài khoản (DELETE /api/users/:id)
+    activate UserAccountCtrl
+    UserAccountCtrl -> DB: Xóa tài liệu User khỏi CSDL
+    activate DB
+    DB --> UserAccountCtrl: Xác nhận xóa thành công
+    deactivate DB
+    UserAccountCtrl --> UserAccountUI: Phản hồi 200 (Xóa tài khoản thành công)
+    deactivate UserAccountCtrl
+    UserAccountUI -> Admin: Hiển thị Toast thành công & loại bỏ tài khoản khỏi danh sách hiển thị
+end
+deactivate UserAccountUI
+@enduml

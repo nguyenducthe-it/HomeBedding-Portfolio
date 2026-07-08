@@ -1,0 +1,60 @@
+@startuml SequenceTuVanTrucTuyen
+autonumber
+actor "Nhân viên" as Staff
+boundary "Giao diện Tư Vấn" as ChatUI
+control "Điều khiển Tư Vấn" as ChatCtrl
+database "CSDL" as DB
+
+Staff -> ChatUI: Truy cập trang tư vấn trực tuyến (Danh sách phòng chat)
+activate ChatUI
+ChatUI -> ChatCtrl: Yêu cầu lấy danh sách phiên tư vấn đang mở (status: 'open')
+activate ChatCtrl
+ChatCtrl -> DB: Truy vấn danh sách phiên tư vấn (Consultation)
+activate DB
+DB --> ChatCtrl: Trả về danh sách phiên tư vấn đang hoạt động
+deactivate DB
+ChatCtrl --> ChatUI: Phản hồi danh sách phiên tư vấn
+deactivate ChatCtrl
+ChatUI -> Staff: Hiển thị danh sách khách hàng đang chờ tư vấn
+
+Staff -> ChatUI: Chọn một khách hàng để bắt đầu tư vấn
+ChatUI -> ChatCtrl: Yêu cầu kết nối phòng chat (consultationId) & lấy lịch sử tin nhắn
+activate ChatCtrl
+ChatCtrl -> DB: Lấy lịch sử tin nhắn của phiên tư vấn
+activate DB
+DB --> ChatCtrl: Trả về danh sách tin nhắn cũ
+deactivate DB
+ChatCtrl --> ChatUI: Phản hồi lịch sử tin nhắn & thiết lập kết nối Socket.io
+deactivate ChatCtrl
+ChatUI -> Staff: Hiển thị khung chat với khách hàng và lịch sử tin nhắn
+
+opt Nhập và gửi tin nhắn mới
+    Staff -> ChatUI: Nhập nội dung tin nhắn và nhấn "Gửi"
+    ChatUI -> ChatCtrl: Gửi tin nhắn qua Socket.io / API (consultationId, text, staffName)
+    activate ChatCtrl
+    ChatCtrl -> DB: Lưu tin nhắn mới vào mảng messages trong Consultation
+    activate DB
+    DB --> ChatCtrl: Xác nhận lưu tin nhắn thành công
+    deactivate DB
+    ChatCtrl -> ChatCtrl: Phát sự kiện Socket.io 'new_message_to_customer' tới Khách hàng
+    ChatCtrl --> ChatUI: Trả về trạng thái đã gửi thành công
+    deactivate ChatCtrl
+    ChatUI -> Staff: Cập nhật tin nhắn mới lên khung chat
+end
+
+opt Đóng phiên tư vấn
+    Staff -> ChatUI: Nhấn nút "Đóng Phiên Tư Vấn"
+    ChatUI -> ChatCtrl: Gửi yêu cầu đóng phiên (consultationId)
+    activate ChatCtrl
+    ChatCtrl -> DB: Cập nhật status thành 'closed' trong Consultation
+    activate DB
+    DB --> ChatCtrl: Xác nhận cập nhật thành công
+    deactivate DB
+    ChatCtrl -> ChatCtrl: Phát sự kiện Socket.io 'consultation_closed' báo cho Khách hàng
+    ChatCtrl --> ChatUI: Phản hồi kết quả đóng phiên thành công (200)
+    deactivate ChatCtrl
+    ChatUI -> ChatUI: Làm mới danh sách phòng chat, đóng khung chat hiện tại
+    ChatUI -> Staff: Hiển thị Toast thông báo đã đóng phiên tư vấn thành công
+end
+deactivate ChatUI
+@enduml

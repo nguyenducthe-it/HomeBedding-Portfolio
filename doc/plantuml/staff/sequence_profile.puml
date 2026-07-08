@@ -1,0 +1,40 @@
+@startuml SequenceProfile
+autonumber
+actor "Nhân viên" as Staff
+boundary "Giao diện Hồ Sơ" as ProfileUI
+control "Điều khiển Hồ Sơ" as ProfileCtrl
+database "CSDL" as DB
+
+Staff -> ProfileUI: Truy cập trang cá nhân (Hồ sơ nhân viên)
+activate ProfileUI
+ProfileUI -> ProfileCtrl: Yêu cầu lấy thông tin cá nhân (userId)
+activate ProfileCtrl
+ProfileCtrl -> DB: Lấy thông tin chi tiết nhân viên (User)
+activate DB
+DB --> ProfileCtrl: Trả về thông tin tài khoản nhân viên
+deactivate DB
+ProfileCtrl --> ProfileUI: Phản hồi thông tin tài khoản
+deactivate ProfileCtrl
+ProfileUI -> Staff: Hiển thị thông tin cá nhân lên form (Họ tên, SĐT, Email, Học vấn, Kỹ năng)
+
+opt Cập nhật thông tin cá nhân
+    Staff -> ProfileUI: Thay đổi các trường thông tin (fullName, phone, education, skills, avatar)
+    Staff -> ProfileUI: Nhấn nút "Lưu Thay Đổi"
+    ProfileUI -> ProfileCtrl: Gửi thông tin cập nhật (userId, updateData)
+    activate ProfileCtrl
+    
+    alt Dữ liệu đầu vào không hợp lệ (Ví dụ: Họ tên hoặc SĐT trống)
+        ProfileCtrl --> ProfileUI: Phản hồi lỗi 400 (Dữ liệu không hợp lệ)
+        ProfileUI -> Staff: Hiển thị Toast thông báo lỗi cập nhật
+    else Dữ liệu hợp lệ
+        ProfileCtrl -> DB: Cập nhật thông tin mới vào bảng User
+        activate DB
+        DB --> ProfileCtrl: Trả về tài liệu User đã cập nhật
+        deactivate DB
+        ProfileCtrl --> ProfileUI: Phản hồi 200 (Cập nhật thông tin thành công)
+        deactivate ProfileCtrl
+        ProfileUI -> Staff: Hiển thị Toast thông báo thành công & cập nhật thông tin hiển thị mới
+    end
+end
+deactivate ProfileUI
+@enduml

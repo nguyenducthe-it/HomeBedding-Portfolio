@@ -1,0 +1,58 @@
+@startuml SequenceQuanLyDonHang
+autonumber
+actor "Quản trị viên" as Admin
+boundary "Giao diện Quản Lý Đơn Hàng" as OrderUI
+control "Điều khiển Đơn Hàng" as OrderCtrl
+database "CSDL" as DB
+
+Admin -> OrderUI: Truy cập mục Quản Lý Đơn Hàng
+activate OrderUI
+OrderUI -> OrderCtrl: Yêu cầu lấy danh sách đơn hàng (filters: status, searchCode)
+activate OrderCtrl
+OrderCtrl -> DB: Lấy danh sách đơn hàng toàn hệ thống (Order)
+activate DB
+DB --> OrderCtrl: Trả về danh sách đơn hàng tương ứng
+deactivate DB
+OrderCtrl --> OrderUI: Phản hồi danh sách đơn hàng
+deactivate OrderCtrl
+OrderUI -> Admin: Hiển thị danh sách đơn hàng toàn hệ thống
+
+Admin -> OrderUI: Chọn một đơn hàng để xem chi tiết
+OrderUI -> OrderCtrl: Yêu cầu thông tin chi tiết đơn hàng (orderId)
+activate OrderCtrl
+OrderCtrl -> DB: Truy vấn chi tiết đơn hàng & thông tin khách hàng liên kết
+activate DB
+DB --> OrderCtrl: Trả về thông tin chi tiết đơn hàng
+deactivate DB
+OrderCtrl --> OrderUI: Phản hồi chi tiết đơn hàng
+deactivate OrderCtrl
+OrderUI -> Admin: Hiển thị thông tin chi tiết đơn hàng
+
+opt Cập nhật trạng thái đơn hàng (Xác nhận / Đang giao / Đã giao / Hủy đơn)
+    Admin -> OrderUI: Chọn trạng thái đơn hàng mới
+    Admin -> OrderUI: Nhấn nút "Cập Nhật Trạng Thái"
+    OrderUI -> OrderCtrl: Gửi yêu cầu cập nhật trạng thái (orderId, newStatus)
+    activate OrderCtrl
+    
+    alt Yêu cầu hủy đơn hàng (newStatus: 'cancelled')
+        OrderCtrl -> DB: Cập nhật trạng thái đơn hàng thành 'cancelled'
+        activate DB
+        DB --> OrderCtrl: Xác nhận cập nhật
+        deactivate DB
+        OrderCtrl -> DB: Hoàn trả số lượng sản phẩm vào kho hàng (Product)
+        activate DB
+        DB --> OrderCtrl: Xác nhận cập nhật kho
+        deactivate DB
+    else Cập nhật trạng thái thông thường (confirmed / shipping / completed)
+        OrderCtrl -> DB: Cập nhật trạng thái đơn hàng (Order)
+        activate DB
+        DB --> OrderCtrl: Xác nhận cập nhật
+        deactivate DB
+    end
+    
+    OrderCtrl --> OrderUI: Phản hồi 200 (Cập nhật đơn hàng thành công)
+    deactivate OrderCtrl
+    OrderUI -> Admin: Hiển thị Toast thông báo cập nhật thành công & làm mới giao diện chi tiết đơn hàng
+end
+deactivate OrderUI
+@enduml

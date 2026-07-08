@@ -1,0 +1,41 @@
+@startuml SequencePhanHoiDanhGia
+autonumber
+actor "Nhân viên" as Staff
+boundary "Giao diện Đánh Giá" as ReviewUI
+control "Điều khiển Đánh Giá" as ReviewCtrl
+database "CSDL" as DB
+
+Staff -> ReviewUI: Truy cập trang quản lý đánh giá của khách hàng
+activate ReviewUI
+ReviewUI -> ReviewCtrl: Yêu cầu danh sách đánh giá sản phẩm
+activate ReviewCtrl
+ReviewCtrl -> DB: Lấy danh sách đánh giá (Review)
+activate DB
+DB --> ReviewCtrl: Trả về danh sách đánh giá (mới nhất xếp trước)
+deactivate DB
+ReviewCtrl --> ReviewUI: Phản hồi danh sách đánh giá
+deactivate ReviewCtrl
+ReviewUI -> Staff: Hiển thị danh sách đánh giá lên màn hình
+
+opt Viết phản hồi cho một đánh giá
+    Staff -> ReviewUI: Chọn một đánh giá cụ thể
+    Staff -> ReviewUI: Nhập nội dung phản hồi của cửa hàng
+    Staff -> ReviewUI: Nhấn nút "Gửi Phản Hồi"
+    ReviewUI -> ReviewCtrl: Gửi yêu cầu phản hồi (reviewId, replyText, staffId)
+    activate ReviewCtrl
+    
+    alt Nội dung phản hồi trống
+        ReviewCtrl --> ReviewUI: Phản hồi lỗi 400 (Nội dung phản hồi không được để trống)
+        ReviewUI -> Staff: Hiển thị Toast thông báo lỗi nhập liệu
+    else Nội dung hợp lệ
+        ReviewCtrl -> DB: Cập nhật trường reply & replyCreatedAt vào tài liệu Review
+        activate DB
+        DB --> ReviewCtrl: Trả về thông tin đánh giá đã cập nhật
+        deactivate DB
+        ReviewCtrl --> ReviewUI: Phản hồi 200 (Gửi phản hồi thành công)
+        deactivate ReviewCtrl
+        ReviewUI -> Staff: Cập nhật giao diện (hiển thị phản hồi) & hiển thị Toast thành công
+    end
+end
+deactivate ReviewUI
+@enduml

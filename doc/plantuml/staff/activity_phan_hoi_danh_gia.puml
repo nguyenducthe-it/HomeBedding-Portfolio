@@ -1,0 +1,33 @@
+@startuml ActivityPhanHoiDanhGia
+|Nhân viên|
+start
+:Truy cập trang Quản Lý Đánh Giá;
+|Hệ thống|
+:Gửi yêu cầu tải danh sách đánh giá lên Server;
+:Truy vấn danh sách đánh giá từ bảng Review trong CSDL;
+:Trả về danh sách đánh giá;
+:Hiển thị danh sách đánh giá lên giao diện;
+|Nhân viên|
+if (Muốn phản hồi đánh giá?) then (Không)
+    stop
+else (Có)
+    :Chọn đánh giá cần phản hồi;
+    :Nhập nội dung phản hồi;
+    :Nhấn nút "Gửi Phản Hồi";
+    |Hệ thống|
+    :Gửi yêu cầu lưu phản hồi lên Server;
+    if (Nội dung phản hồi trống?) then (Có)
+        :Trả về lỗi nội dung trống (400);
+        :Hiển thị Toast báo lỗi;
+        |Nhân viên|
+        stop
+    else (Không)
+        |Hệ thống|
+        :Cập nhật nội dung phản hồi (reply) vào bản ghi Review trong CSDL;
+        :Trả về kết quả cập nhật thành công (200);
+        :Cập nhật giao diện hiển thị phản hồi và thông báo thành công;
+        |Nhân viên|
+        stop
+    endif
+endif
+@enduml

@@ -1,0 +1,27 @@
+@startuml ActivityBaoCaoTaiChinh
+|Quản trị viên|
+start
+:Truy cập mục Báo cáo tài chính;
+:Chọn Khoảng thời gian tra cứu báo cáo (Ngày/Tuần/Tháng/Năm);
+:Nhấn nút "Xem Thống Kê";
+|Hệ thống|
+:Gửi yêu cầu truy vấn số liệu tài chính lên Server;
+:Truy vấn danh sách đơn hàng đã hoàn thành (completed) trong khoảng thời gian từ CSDL;
+:Tính toán tổng doanh thu, số lượng đơn hàng, số lượng sản phẩm bán ra;
+:Phân tích danh sách sản phẩm bán chạy nhất;
+:Trả về dữ liệu tổng hợp;
+:Hiển thị bảng số liệu doanh thu và vẽ biểu đồ trực quan (Chart.js);
+|Quản trị viên|
+if (Muốn xuất file báo cáo?) then (Có)
+    :Nhấn nút "Xuất File (Excel/PDF)";
+    |Hệ thống|
+    :Gửi yêu cầu xuất file lên Server;
+    :Tạo file báo cáo dựa trên số liệu thống kê;
+    :Trả về tệp tin (hoặc link tải xuống);
+    :Kích hoạt tải file báo cáo về máy;
+    |Quản trị viên|
+    stop
+else (Không)
+    stop
+endif
+@enduml

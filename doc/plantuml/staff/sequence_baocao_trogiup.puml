@@ -1,0 +1,42 @@
+@startuml SequenceBaoCaoTroGiup
+autonumber
+actor "Nhân viên" as Staff
+boundary "Giao diện Trợ Giúp" as SupportUI
+control "Điều khiển Trợ Giúp" as SupportCtrl
+database "CSDL" as DB
+
+Staff -> SupportUI: Truy cập mục Báo Cáo Trợ Giúp (Phản hồi nội bộ)
+activate SupportUI
+SupportUI -> SupportCtrl: Yêu cầu lịch sử báo cáo trợ giúp (staffId)
+activate SupportCtrl
+SupportCtrl -> DB: Lấy danh sách báo cáo trợ giúp của nhân viên (StaffFeedback)
+activate DB
+DB --> SupportCtrl: Trả về danh sách báo cáo trợ giúp
+deactivate DB
+SupportCtrl --> SupportUI: Phản hồi danh sách báo cáo trợ giúp
+deactivate SupportCtrl
+SupportUI -> Staff: Hiển thị danh sách báo cáo cũ & trạng thái xử lý
+
+opt Tạo báo cáo trợ giúp mới
+    Staff -> SupportUI: Nhấp chọn nút "Tạo Báo Cáo Mới"
+    SupportUI -> Staff: Hiển thị form điền báo cáo (Loại báo cáo, Độ ưu tiên, Nội dung)
+    Staff -> SupportUI: Chọn Loại (feedbackType), Độ ưu tiên (priority) & Nhập nội dung (text)
+    Staff -> SupportUI: Nhấn nút "Gửi Báo Cáo"
+    SupportUI -> SupportCtrl: Gửi yêu cầu lưu báo cáo (staffId, staffName, feedbackType, priority, text)
+    activate SupportCtrl
+    
+    alt Thông tin nhập liệu không hợp lệ (Trống nội dung)
+        SupportCtrl --> SupportUI: Phản hồi lỗi 400 (Vui lòng điền đầy đủ thông tin)
+        SupportUI -> Staff: Hiển thị Toast thông báo lỗi dữ liệu
+    else Thông tin hợp lệ
+        SupportCtrl -> DB: Tạo bản ghi StaffFeedback mới với status: 'pending'
+        activate DB
+        DB --> SupportCtrl: Xác nhận lưu thành công
+        deactivate DB
+        SupportCtrl --> SupportUI: Phản hồi 200 (Gửi báo cáo trợ giúp thành công)
+        deactivate SupportCtrl
+        SupportUI -> Staff: Hiển thị Toast thành công, làm mới danh sách báo cáo
+    end
+end
+deactivate SupportUI
+@enduml

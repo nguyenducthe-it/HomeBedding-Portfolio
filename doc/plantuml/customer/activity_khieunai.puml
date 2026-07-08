@@ -1,0 +1,23 @@
+@startuml ActivityKhieuNai
+|Khách hàng|
+start
+:Mở mục "Khiếu nại & Phản hồi" (customer.html#complaints);
+|Hệ thống|
+:Gửi API lấy lịch sử khiếu nại cá nhân;
+:Truy vấn CSDL tìm khiếu nại của khách hàng;
+:Render lịch sử khiếu nại lên màn hình;
+|Khách hàng|
+:Chọn gửi khiếu nại mới;
+|Hệ thống|
+:Hiển thị form nhập khiếu nại;
+|Khách hàng|
+:Chọn loại khiếu nại, điền mô tả -> Nhấn "Gửi khiếu nại";
+|Hệ thống|
+:Gửi yêu cầu tạo khiếu nại lên Server;
+:Tạo và lưu bản ghi Complaint (status='pending') vào CSDL;
+:Trả về phản hồi 201 thành công;
+:Cập nhật thêm khiếu nại mới vào lịch sử hiển thị;
+:Hiển thị Toast báo gửi khiếu nại thành công, chờ giải quyết;
+|Khách hàng|
+stop
+@enduml

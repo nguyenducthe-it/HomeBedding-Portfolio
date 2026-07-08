@@ -1,0 +1,34 @@
+@startuml SequenceTimKiemGioHang
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Giỏ Hàng" as CartUI
+control "Điều khiển Giỏ Hàng" as CartCtrl
+entity "Danh sách sản phẩm Giỏ Hàng" as CartEntity
+
+Customer -> CartUI: Mở trang Giỏ hàng
+activate CartUI
+CartUI -> CartCtrl: Yêu cầu tải danh sách sản phẩm trong giỏ hàng
+activate CartCtrl
+CartCtrl -> CartEntity: Lấy mảng sản phẩm trong giỏ hàng
+activate CartEntity
+CartEntity --> CartCtrl: Trả về mảng sản phẩm
+deactivate CartEntity
+CartCtrl --> CartUI: Hiển thị toàn bộ giỏ hàng ban đầu
+deactivate CartCtrl
+
+Customer -> CartUI: Nhập từ khóa tìm kiếm vào ô lọc giỏ hàng
+CartUI -> CartCtrl: Gọi hàm lọc sản phẩm local: filterCartItems(keyword)
+activate CartCtrl
+CartCtrl -> CartEntity: Quét danh sách các item lọc theo tên sản phẩm chứa từ khóa
+activate CartEntity
+CartEntity --> CartCtrl: Trả về mảng các sản phẩm khớp từ khóa
+deactivate CartEntity
+CartCtrl --> CartUI: Trả về danh sách đã lọc
+deactivate CartCtrl
+alt Không tìm thấy sản phẩm nào khớp
+    CartUI --> Customer: Hiển thị thông báo "Không tìm thấy sản phẩm nào trong giỏ"
+else Tìm thấy sản phẩm
+    CartUI --> Customer: Render lại các thẻ sản phẩm thỏa mãn điều kiện tìm kiếm lên màn hình
+end
+deactivate CartUI
+@enduml

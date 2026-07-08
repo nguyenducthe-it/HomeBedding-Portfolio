@@ -1,0 +1,34 @@
+@startuml ActivityXoaGioHang
+|Khách hàng|
+start
+:Truy cập trang Giỏ hàng;
+:Nhấp biểu tượng "Thùng rác" của sản phẩm;
+|Hệ thống|
+:Hiển thị Custom Dialog hỏi xác nhận xóa;
+|Khách hàng|
+if (Chọn Đồng ý?) then (Không)
+    |Hệ thống|
+    :Đóng hộp thoại, giữ nguyên giỏ hàng;
+    |Khách hàng|
+    stop
+else (Có)
+    |Hệ thống|
+    :Gửi API xóa sản phẩm khỏi giỏ hàng;
+    :Tìm giỏ hàng của người dùng trong CSDL;
+    if (Tìm thấy giỏ hàng?) then (Không)
+        :Trả về lỗi 404;
+        :Hiển thị Toast thông báo lỗi;
+        |Khách hàng|
+        stop
+    else (Có)
+        |Hệ thống|
+        :Loại bỏ item ra khỏi danh sách;
+        :Lưu giỏ hàng và nạp lại thông tin;
+        :Trả về giỏ hàng mới;
+        :Render lại giỏ hàng và cập nhật Badge ở Header;
+        :Hiển thị Toast thông báo xóa thành công;
+        |Khách hàng|
+        stop
+    endif
+endif
+@enduml

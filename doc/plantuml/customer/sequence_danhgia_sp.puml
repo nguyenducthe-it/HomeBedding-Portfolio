@@ -1,0 +1,55 @@
+@startuml SequenceDanhGiaSP
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Lịch sử đơn hàng" as OrdersUI
+boundary "Giao diện Đánh giá (Modal)" as ReviewUI
+control "Điều khiển Đánh giá" as ReviewCtrl
+database "CSDL" as DB
+control "Thư mục Uploads" as Disk
+
+Customer -> OrdersUI: Nhấp nút "Viết đánh giá" trên đơn hàng đã hoàn thành (completed)
+activate OrdersUI
+OrdersUI -> ReviewUI: Mở Modal Đánh giá sản phẩm
+activate ReviewUI
+ReviewUI -> Customer: Hiển thị form đánh giá (chọn số sao 1-5, nhập bình luận, chọn ảnh tải lên)
+deactivate OrdersUI
+
+Customer -> ReviewUI: Chọn số sao, nhập ý kiến & chọn các tệp ảnh -> Gửi
+alt Có chọn tải lên ảnh
+    ReviewUI -> ReviewCtrl: Tải lên các tệp ảnh đánh giá
+    activate ReviewCtrl
+    ReviewCtrl -> Disk: Lưu các tệp ảnh vào thư mục /uploads/
+    Disk --> ReviewCtrl: Lưu thành công, trả về danh sách tên file
+    ReviewCtrl --> ReviewUI: Phản hồi 200 kèm các đường dẫn ảnh
+    deactivate ReviewCtrl
+end
+
+ReviewUI -> ReviewCtrl: Gửi yêu cầu lưu đánh giá (POST /api/reviews/submit)
+activate ReviewCtrl
+ReviewCtrl -> DB: Kiểm tra xem đã có đánh giá cho sản phẩm thuộc đơn hàng này chưa
+activate DB
+DB --> ReviewCtrl: Trả về đánh giá cũ (nếu có)
+deactivate DB
+alt Đã tồn tại đánh giá cũ
+    ReviewCtrl --> ReviewUI: Phản hồi 400 (Bạn đã đánh giá sản phẩm này rồi)
+    ReviewUI -> Customer: Hiển thị Toast thông báo lỗi đánh giá trùng
+else Chưa có đánh giá nào trước đó
+    ReviewCtrl -> DB: Tạo mới & lưu Review document
+    activate DB
+    DB --> ReviewCtrl: Lưu đánh giá thành công
+    deactivate DB
+    ReviewCtrl -> DB: Tính toán lại điểm số trung bình (averageRating) & số lượng review
+    activate DB
+    DB --> ReviewCtrl: Trả về điểm trung bình mới
+    deactivate DB
+    ReviewCtrl -> DB: Cập nhật averageRating và reviewCount cho Product
+    activate DB
+    DB --> ReviewCtrl: Cập nhật sản phẩm thành công
+    deactivate DB
+    ReviewCtrl --> ReviewUI: Phản hồi 201 (Đánh giá thành công)
+    deactivate ReviewCtrl
+    ReviewUI -> ReviewUI: Đóng modal Đánh giá
+    ReviewUI --> Customer: Hiển thị Toast thông báo gửi đánh giá thành công
+end
+deactivate ReviewUI
+@enduml

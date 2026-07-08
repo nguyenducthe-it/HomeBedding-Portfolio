@@ -1,0 +1,42 @@
+@startuml SequenceDangNhap
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Trang Chủ" as HomeUI
+boundary "Giao diện Đăng Nhập (Modal)" as LoginUI
+control "Điều khiển Đăng Nhập" as LoginCtrl
+database "CSDL" as DB
+
+Customer -> HomeUI: Truy cập trang chủ
+activate HomeUI
+HomeUI -> Customer: Hiển thị giao diện trang chủ
+Customer -> HomeUI: Nhấp chọn nút "Đăng Nhập"
+HomeUI -> LoginUI: Mở Modal Đăng Nhập
+activate LoginUI
+LoginUI -> Customer: Hiển thị form Đăng Nhập
+Customer -> LoginUI: Nhập Email (hoặc fullName) & Mật khẩu
+LoginUI -> LoginCtrl: Gửi yêu cầu đăng nhập (email, password)
+activate LoginCtrl
+LoginCtrl -> DB: Tìm người dùng theo email hoặc fullName
+activate DB
+DB --> LoginCtrl: Trả về thông tin tài khoản (nếu tồn tại)
+deactivate DB
+alt Tài khoản không tồn tại
+    LoginCtrl --> LoginUI: Phản hồi 400 (Tài khoản không chính xác)
+    LoginUI -> Customer: Hiển thị Toast thông báo lỗi thông tin đăng nhập
+else Tài khoản tồn tại
+    LoginCtrl -> LoginCtrl: So khớp mật khẩu: comparePassword()
+    alt Sai mật khẩu
+        LoginCtrl --> LoginUI: Phản hồi 400 (Mật khẩu không chính xác)
+        LoginUI -> Customer: Hiển thị Toast thông báo sai mật khẩu
+    else Mật khẩu trùng khớp
+        LoginCtrl -> LoginCtrl: Tạo mã JWT Token (hạn 24 giờ)
+        LoginCtrl --> LoginUI: Phản hồi 200 { token, userId, role, fullName }
+        deactivate LoginCtrl
+        LoginUI -> LoginUI: Lưu token & thông tin cơ bản vào LocalStorage
+        LoginUI -> HomeUI: Đóng modal Đăng nhập, tải thông tin user lên Header
+        deactivate LoginUI
+        HomeUI -> Customer: Hiển thị Toast thành công & điều hướng sang giao diện Khách hàng (customer.html)
+    end
+end
+deactivate HomeUI
+@enduml

@@ -1,0 +1,43 @@
+@startuml ActivityDangNhap
+|Nhân viên|
+start
+:Truy cập trang đăng nhập;
+:Nhập Email và Mật khẩu;
+:Nhấn nút "Đăng Nhập";
+|Hệ thống|
+:Gửi yêu cầu đăng nhập lên Server;
+:Tìm kiếm tài khoản theo email trong CSDL;
+if (Tìm thấy tài khoản?) then (Không)
+    :Trả về lỗi tài khoản không tồn tại (400);
+    :Hiển thị Toast báo lỗi đăng nhập;
+    |Nhân viên|
+    stop
+else (Có)
+    |Hệ thống|
+    :So khớp mật khẩu bằng bcrypt;
+    if (Mật khẩu trùng khớp?) then (Không)
+        :Trả về lỗi mật khẩu sai (400);
+        :Hiển thị Toast báo sai mật khẩu;
+        |Nhân viên|
+        stop
+    else (Có)
+        |Hệ thống|
+        :Kiểm tra vai trò người dùng (role);
+        if (Vai trò là 'staff' hoặc 'admin'?) then (Không)
+            :Trả về lỗi từ chối truy cập (403);
+            :Hiển thị Toast báo không có quyền truy cập;
+            |Nhân viên|
+            stop
+        else (Có)
+            |Hệ thống|
+            :Tạo JWT Token;
+            :Trả về Token và thông tin user (200);
+            :Lưu Token vào LocalStorage;
+            :Điều hướng sang giao diện Nhân viên (staff.html);
+            :Hiển thị thông báo đăng nhập thành công;
+            |Nhân viên|
+            stop
+        endif
+    endif
+endif
+@enduml

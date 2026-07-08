@@ -1,0 +1,66 @@
+@startuml SequenceSystemSettings
+autonumber
+actor "Quản trị viên" as Admin
+boundary "Giao diện Cài Đặt" as SettingsUI
+control "Điều khiển Cài Đặt" as SettingsCtrl
+database "CSDL" as DB
+
+Admin -> SettingsUI: Truy cập trang Cài đặt hệ thống
+activate SettingsUI
+SettingsUI -> SettingsCtrl: Yêu cầu lấy cấu hình hệ thống hiện tại
+activate SettingsCtrl
+SettingsCtrl -> DB: Lấy các tham số cấu hình (Setting.find)
+activate DB
+DB --> SettingsCtrl: Trả về danh sách cài đặt (màu sắc, thông tin sao lưu...)
+deactivate DB
+SettingsCtrl --> SettingsUI: Phản hồi danh sách cài đặt
+deactivate SettingsCtrl
+SettingsUI -> Admin: Hiển thị các bảng cấu hình hệ thống
+
+opt Thiết lập màu sắc hệ thống (Theme Color)
+    Admin -> SettingsUI: Chọn màu chủ đạo (primaryColor) và màu phụ (secondaryColor)
+    Admin -> SettingsUI: Nhấn nút "Lưu Cấu Hình Màu"
+    SettingsUI -> SettingsCtrl: Gửi yêu cầu cập nhật màu (colors: {primary, secondary})
+    activate SettingsCtrl
+    SettingsCtrl -> DB: Lưu/Cập nhật khóa 'system_theme_colors' vào bảng Setting
+    activate DB
+    DB --> SettingsCtrl: Xác nhận cập nhật thành công
+    deactivate DB
+    SettingsCtrl --> SettingsUI: Phản hồi 200 (Cập nhật màu thành công)
+    deactivate SettingsCtrl
+    SettingsUI -> SettingsUI: Áp dụng màu sắc mới lên giao diện (CSS custom properties)
+    SettingsUI -> Admin: Hiển thị Toast thông báo cập nhật màu thành công
+end
+
+opt Sao lưu dữ liệu (Database Backup)
+    Admin -> SettingsUI: Nhấp chọn nút "Sao Lưu Dữ Liệu"
+    SettingsUI -> SettingsCtrl: Gọi API thực hiện sao lưu (POST /api/settings/backup)
+    activate SettingsCtrl
+    SettingsCtrl -> SettingsCtrl: Khởi tạo quy trình sao lưu (mongodump hoặc kết xuất file JSON)
+    SettingsCtrl -> DB: Lưu thông tin lịch sử sao lưu (file path, timestamp) vào bảng Setting
+    activate DB
+    DB --> SettingsCtrl: Xác nhận lưu thành công
+    deactivate DB
+    SettingsCtrl --> SettingsUI: Phản hồi 200 (Sao lưu dữ liệu thành công)
+    deactivate SettingsCtrl
+    SettingsUI -> Admin: Hiển thị Toast thành công & cập nhật danh sách các bản sao lưu
+end
+
+opt Khôi phục dữ liệu (Database Restore)
+    Admin -> SettingsUI: Chọn bản sao lưu từ danh sách hoặc tải file sao lưu lên
+    Admin -> SettingsUI: Nhấn nút "Khôi Phục Dữ Liệu"
+    SettingsUI -> Admin: Hiển thị cảnh báo nguy cơ ghi đè dữ liệu hiện tại
+    Admin -> SettingsUI: Xác nhận "Đồng ý khôi phục"
+    SettingsUI -> SettingsCtrl: Gửi yêu cầu khôi phục dữ liệu (POST /api/settings/restore, backupId)
+    activate SettingsCtrl
+    SettingsCtrl -> SettingsCtrl: Thực thi khôi phục dữ liệu (mongorestore hoặc import file)
+    SettingsCtrl -> DB: Ghi nhận lịch sử khôi phục dữ liệu vào bảng Setting
+    activate DB
+    DB --> SettingsCtrl: Xác nhận ghi nhận thành công
+    deactivate DB
+    SettingsCtrl --> SettingsUI: Phản hồi 200 (Khôi phục dữ liệu thành công)
+    deactivate SettingsCtrl
+    SettingsUI -> Admin: Hiển thị Toast thành công & tự động tải lại (Reload) trang web
+end
+deactivate SettingsUI
+@enduml

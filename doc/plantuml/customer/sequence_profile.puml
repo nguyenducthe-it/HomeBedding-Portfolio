@@ -1,0 +1,56 @@
+@startuml SequenceProfile
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Hồ Sơ" as ProfileUI
+control "Điều khiển Hồ Sơ" as ProfileCtrl
+database "CSDL" as DB
+
+Customer -> ProfileUI: Truy cập trang cá nhân (Hồ sơ khách hàng)
+activate ProfileUI
+ProfileUI -> ProfileCtrl: Yêu cầu lấy thông tin cá nhân (userId)
+activate ProfileCtrl
+ProfileCtrl -> DB: Lấy thông tin chi tiết khách hàng (User)
+activate DB
+DB --> ProfileCtrl: Trả về tài liệu User của khách hàng
+deactivate DB
+ProfileCtrl --> ProfileUI: Phản hồi dữ liệu thông tin cá nhân
+deactivate ProfileCtrl
+ProfileUI -> Customer: Hiển thị thông tin cá nhân & danh sách địa chỉ nhận hàng
+
+opt Cập nhật thông tin cá nhân cơ bản
+    Customer -> ProfileUI: Thay đổi thông tin cá nhân (fullName, phone, avatar, gender, birthDate)
+    Customer -> ProfileUI: Nhấn nút "Lưu Hồ Sơ"
+    ProfileUI -> ProfileCtrl: Gửi thông tin cập nhật (userId, updateData)
+    activate ProfileCtrl
+    
+    alt Dữ liệu không hợp lệ (Ví dụ: Họ tên hoặc Số điện thoại trống)
+        ProfileCtrl --> ProfileUI: Phản hồi lỗi 400 (Dữ liệu đầu vào không hợp lệ)
+        ProfileUI -> Customer: Hiển thị Toast thông báo lỗi cập nhật
+    else Dữ liệu hợp lệ
+        ProfileCtrl -> DB: Cập nhật thông tin vào bảng User
+        activate DB
+        DB --> ProfileCtrl: Trả về thông tin User mới đã cập nhật
+        deactivate DB
+        ProfileCtrl --> ProfileUI: Phản hồi 200 (Cập nhật thông tin thành công)
+        deactivate ProfileCtrl
+        ProfileUI -> Customer: Hiển thị Toast thông báo thành công & cập nhật lại giao diện
+    end
+end
+
+opt Quản lý sổ địa chỉ giao hàng (Thêm địa chỉ mới)
+    Customer -> ProfileUI: Nhấp chọn nút "Thêm Địa Chỉ Mới"
+    ProfileUI -> Customer: Hiển thị Form nhập địa chỉ giao hàng
+    Customer -> ProfileUI: Nhập thông tin địa chỉ mới (fullName, phone, province, district, ward, detail)
+    Customer -> ProfileUI: Nhấn nút "Lưu Địa Chỉ"
+    ProfileUI -> ProfileCtrl: Gửi yêu cầu thêm địa chỉ (userId, addressData)
+    activate ProfileCtrl
+    ProfileCtrl -> DB: Đẩy (push) địa chỉ mới vào mảng addresses của User
+    activate DB
+    DB --> ProfileCtrl: Xác nhận lưu thành công
+    deactivate DB
+    ProfileCtrl --> ProfileUI: Phản hồi 200 (Thêm địa chỉ thành công)
+    deactivate ProfileCtrl
+    ProfileUI -> Customer: Hiển thị Toast thành công & cập nhật danh sách địa chỉ
+end
+deactivate ProfileUI
+@enduml

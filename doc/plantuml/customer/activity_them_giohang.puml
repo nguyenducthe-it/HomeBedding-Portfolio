@@ -1,0 +1,24 @@
+@startuml ActivityThemGioHang
+|Khách hàng|
+start
+:Nhập số lượng & Nhấp nút "Thêm vào giỏ hàng";
+|Hệ thống|
+:Gửi API thêm vào giỏ hàng;
+:Tìm giỏ hàng của người dùng trong CSDL;
+if (Giỏ hàng đã tồn tại?) then (Chưa)
+    :Khởi tạo giỏ hàng mới trống;
+else (Đã có)
+endif
+:Kiểm tra sản phẩm đã có trong giỏ chưa;
+if (Sản phẩm đã có?) then (Có)
+    :Cộng dồn số lượng mới;
+else (Chưa)
+    :Thêm sản phẩm mới vào giỏ;
+endif
+:Lưu giỏ hàng và nạp thông tin chi tiết;
+:Trả về đối tượng giỏ hàng mới cập nhật;
+:Cập nhật số lượng Badge trên Header;
+:Hiển thị Toast thông báo thêm thành công;
+|Khách hàng|
+stop
+@enduml

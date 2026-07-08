@@ -1,0 +1,26 @@
+@startuml ActivityTheoDoiLuong
+|Nhân viên|
+start
+:Truy cập trang Bảng Lương;
+:Chọn Tháng và Năm cần tra cứu;
+:Nhấn nút "Xem Bảng Lương";
+|Hệ thống|
+:Gửi yêu cầu truy vấn thông tin lương lên Server;
+:Truy vấn lương cơ bản (baseSalary) từ bảng User trong CSDL;
+:Truy vấn danh sách chấm công (Attendance) trong tháng từ CSDL;
+:Tính toán tổng số ca hiện diện (present), trễ (late) và vắng (absent);
+:Áp dụng công thức tính lương & trừ các khoản phạt đi muộn/vắng;
+:Trả về kết quả bảng lương chi tiết (200);
+:Hiển thị bảng lương (lương cơ bản, phụ cấp, các khoản phạt, tổng thực lĩnh);
+|Nhân viên|
+if (Có sai sót trong bảng lương?) then (Có)
+    :Nhấp nút "Khiếu Nại Lương";
+    |Hệ thống|
+    :Điều hướng sang trang Báo cáo Trợ giúp;
+    :Tự động điền chủ đề "Khiếu nại lương tháng [Tháng]/[Năm]";
+    |Nhân viên|
+    stop
+else (Không)
+    stop
+endif
+@enduml

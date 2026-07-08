@@ -1,0 +1,44 @@
+@startuml SequenceDangKy
+autonumber
+actor "Khách hàng" as Customer
+boundary "Giao diện Trang Chủ" as HomeUI
+boundary "Giao diện Đăng Ký (Modal)" as RegisterUI
+control "Điều khiển Đăng Ký" as RegisterCtrl
+database "CSDL" as DB
+
+Customer -> HomeUI: Truy cập trang chủ
+activate HomeUI
+HomeUI -> Customer: Hiển thị giao diện trang chủ
+Customer -> HomeUI: Nhấp chọn nút "Đăng Ký"
+HomeUI -> RegisterUI: Mở Modal Đăng Ký
+activate RegisterUI
+RegisterUI -> Customer: Hiển thị form Đăng Ký
+Customer -> RegisterUI: Nhập Họ tên, Email, SĐT, Mật khẩu & nhấn "Đăng ký"
+RegisterUI -> RegisterUI: Validate định dạng Email, SĐT, độ mạnh Mật khẩu
+alt Validate Client Thất bại
+    RegisterUI -> Customer: Hiển thị Toast thông báo lỗi định dạng dữ liệu
+else Validate Client Thành công
+    RegisterUI -> RegisterCtrl: Gửi yêu cầu đăng ký (fullName, email, phone, password)
+    activate RegisterCtrl
+    RegisterCtrl -> DB: Truy vấn tìm tài khoản theo email hoặc phone
+    activate DB
+    DB --> RegisterCtrl: Trả về thông tin tài khoản (nếu tồn tại)
+    deactivate DB
+    alt Tài khoản (Email hoặc SĐT) đã tồn tại
+        RegisterCtrl --> RegisterUI: Phản hồi 400 (Email hoặc số điện thoại đã sử dụng)
+        RegisterUI -> Customer: Hiển thị Toast thông báo lỗi trùng lặp tài khoản
+    else Tài khoản chưa tồn tại
+        RegisterCtrl -> RegisterCtrl: Mã hóa mật khẩu bằng bcryptjs
+        RegisterCtrl -> DB: Lưu thông tin người dùng mới (role: 'customer')
+        activate DB
+        DB --> RegisterCtrl: Lưu thành công
+        deactivate DB
+        RegisterCtrl --> RegisterUI: Phản hồi 201 (Đăng ký tài khoản thành công)
+        deactivate RegisterCtrl
+        RegisterUI -> HomeUI: Đóng modal Đăng ký, hiển thị modal Đăng nhập
+        deactivate RegisterUI
+        HomeUI -> Customer: Hiển thị Toast thông báo đăng ký thành công
+    end
+end
+deactivate HomeUI
+@enduml

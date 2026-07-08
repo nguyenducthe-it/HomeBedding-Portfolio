@@ -1,0 +1,25 @@
+@startuml ActivityQuanLyDonHang
+|Khách hàng|
+start
+:Truy cập trang chủ;
+:Chọn "Đơn Hàng Của Tôi";
+|Hệ thống|
+:Gửi yêu cầu tải danh sách đơn hàng đã mua;
+:Truy vấn CSDL lấy danh sách đơn hàng;
+:Hiển thị danh sách đơn hàng;
+|Khách hàng|
+:Chọn đơn hàng cần theo dõi;
+|Hệ thống|
+:Gửi yêu cầu lấy thông tin vận chuyển;
+:Kiểm tra tính hợp lệ của mã đơn hàng (MDH);
+:Truy vấn trạng thái đơn hàng trong CSDL;
+if (Thông tin hợp lệ và tìm thấy?) then (Có)
+    :Gửi thông tin lộ trình chi tiết về UI;
+    :Hiển thị lộ trình đơn hàng chi tiết;
+else (Không)
+    :Trả về mã lỗi;
+    :Hiển thị thông báo "Không thể tải thông tin lúc này";
+endif
+|Khách hàng|
+stop
+@enduml

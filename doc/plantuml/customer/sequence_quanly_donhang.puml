@@ -1,0 +1,35 @@
+@startuml SequenceQuanLyDonHang
+autonumber
+actor "Khách Hàng" as Customer
+boundary "Giao Diện Trang Chủ" as HomeUI
+boundary "Giao diện theo dõi đơn hàng" as TrackingUI
+control "Điều khiển theo dõi ĐHang" as TrackingCtrl
+database "CSDL" as DB
+
+Customer -> HomeUI: Truy cập trang chủ
+activate HomeUI
+Customer -> HomeUI: chọn "Đơn Hàng Của Tôi"
+HomeUI -> TrackingUI: yêu cầu gửi danh sách đơn hàng
+activate TrackingUI
+TrackingUI --> Customer: Hiển thị Danh sách đơn hàng đã mua
+deactivate HomeUI
+
+Customer -> TrackingUI: chọn đơn hàng cần theo dõi
+TrackingUI -> TrackingCtrl: yêu cầu lấy thông tin vận chuyển
+activate TrackingCtrl
+TrackingCtrl -> TrackingCtrl: kiểm tra tính hợp lệ của MDH
+TrackingCtrl -> DB: Truy vấn trạng thái đơn hàng
+activate DB
+DB --> TrackingCtrl: trả về trạng thái(lịch sử, lịch sử GH)
+deactivate DB
+
+alt Hợp Lệ
+    TrackingCtrl --> TrackingUI: Gửi thông tin chi tiết VChuyen
+    TrackingUI --> Customer: Hiển thị lộ trình Đơn Hàng
+else không tìm thấy/ lỗi hệ thống
+    TrackingCtrl --> TrackingUI: thông báo lỗi
+    deactivate TrackingCtrl
+    TrackingUI --> Customer: Hiển thị "Khong thể tải TT lúc này"
+end
+deactivate TrackingUI
+@enduml

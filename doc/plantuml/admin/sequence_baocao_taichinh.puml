@@ -1,0 +1,34 @@
+@startuml SequenceBaoCaoTaiChinh
+autonumber
+actor "Quản trị viên" as Admin
+boundary "Giao diện Tài Chính" as FinanceUI
+control "Điều khiển Tài Chính" as FinanceCtrl
+database "CSDL" as DB
+
+Admin -> FinanceUI: Truy cập trang Báo cáo tài chính
+activate FinanceUI
+FinanceUI -> Admin: Hiển thị các bộ lọc (Khoảng thời gian: Hôm nay / Tuần này / Tháng này / Tùy chọn)
+Admin -> FinanceUI: Chọn Khoảng thời gian báo cáo cần xem (startDate, endDate)
+FinanceUI -> FinanceCtrl: Yêu cầu số liệu tài chính (startDate, endDate)
+activate FinanceCtrl
+FinanceCtrl -> DB: Truy vấn danh sách đơn hàng đã hoàn thành trong khoảng thời gian (Order.find({status: 'completed'}))
+activate DB
+DB --> FinanceCtrl: Trả về danh sách đơn hàng hoàn thành
+deactivate DB
+
+FinanceCtrl -> FinanceCtrl: Tổng hợp số liệu tài chính:\n- Tính tổng doanh thu (revenue)\n- Thống kê số lượng đơn hàng (orderCount)\n- Tính tổng số sản phẩm đã bán và top sản phẩm chạy nhất
+FinanceCtrl --> FinanceUI: Phản hồi báo cáo tài chính tổng hợp (doanh thu, đơn hàng, biểu đồ chi tiết)
+deactivate FinanceCtrl
+FinanceUI -> Admin: Vẽ biểu đồ doanh thu (Chart.js) & Hiển thị bảng số liệu thống kê chi tiết
+
+opt Xuất báo cáo tài chính ra file Excel/PDF
+    Admin -> FinanceUI: Nhấn nút "Xuất Báo Cáo (Excel/PDF)"
+    FinanceUI -> FinanceCtrl: Yêu cầu tạo file báo cáo (startDate, endDate, format)
+    activate FinanceCtrl
+    FinanceCtrl -> FinanceCtrl: Tạo cấu trúc tài liệu Excel/PDF từ số liệu đã tính
+    FinanceCtrl --> FinanceUI: Trả về đường dẫn tải file (downloadUrl) hoặc file binary
+    deactivate FinanceCtrl
+    FinanceUI -> Admin: Kích hoạt tải xuống file báo cáo tài chính về máy tính của Admin
+end
+deactivate FinanceUI
+@enduml

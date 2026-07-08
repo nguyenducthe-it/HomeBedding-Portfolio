@@ -1,0 +1,34 @@
+@startuml ActivityQuanLyChamCong
+|Quản trị viên|
+start
+:Truy cập trang Quản lý chấm công;
+|Hệ thống|
+:Gửi yêu cầu tải bảng chấm công & yêu cầu đăng ký ca mới lên Server;
+:Truy vấn CSDL bảng Attendance & ShiftRequest (status='pending');
+:Trả về danh sách chấm công & yêu cầu chờ duyệt;
+:Hiển thị thông tin lên giao diện quản trị;
+|Quản trị viên|
+if (Muốn duyệt yêu cầu đăng ký ca trực?) then (Không)
+    stop
+else (Có)
+    :Chọn yêu cầu đăng ký từ danh sách;
+    if (Quyết định xử lý?) then (Phê duyệt (Approve))
+        :Nhấn nút "Duyệt";
+        |Hệ thống|
+        :Gửi yêu cầu phê duyệt lên Server (status: 'approved');
+        :Cập nhật trạng thái ShiftRequest thành 'approved' trong CSDL;
+        :Tạo/Cập nhật các ca trực tương ứng trong bảng Attendance trong CSDL;
+    else (Từ chối (Reject))
+        |Quản trị viên|
+        :Nhấn nút "Từ chối";
+        |Hệ thống|
+        :Gửi yêu cầu từ chối lên Server (status: 'rejected');
+        :Cập nhật trạng thái ShiftRequest thành 'rejected' trong CSDL;
+    endif
+    |Hệ thống|
+    :Trả về kết quả xử lý thành công (200);
+    :Làm mới bảng chấm công & danh sách chờ duyệt, hiển thị Toast thành công;
+    |Quản trị viên|
+    stop
+endif
+@enduml

@@ -1,0 +1,19 @@
+@startuml ActivityTimKiemGioHang
+|Khách hàng|
+start
+:Truy cập trang Giỏ hàng;
+|Hệ thống|
+:Tải và hiển thị danh sách giỏ hàng ban đầu;
+|Khách hàng|
+:Nhập từ khóa tìm kiếm vào ô lọc giỏ hàng;
+|Hệ thống|
+:Gọi hàm lọc sản phẩm local (filterCartItems);
+:Quét danh sách các item theo tên chứa từ khóa;
+if (Danh sách kết quả lọc rỗng?) then (Có)
+    :Hiển thị thông báo "Không tìm thấy sản phẩm nào trong giỏ";
+else (Không)
+    :Render các sản phẩm khớp lên UI, ẩn sản phẩm không khớp;
+endif
+|Khách hàng|
+stop
+@enduml
