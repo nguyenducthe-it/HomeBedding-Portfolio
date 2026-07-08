@@ -12,7 +12,6 @@ web_modules/
 *.env
 
 # Uploads and User data
-uploads/
 mongodb_backup/
 
 # Logs and Debug
