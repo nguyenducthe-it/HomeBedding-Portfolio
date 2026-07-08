@@ -61,13 +61,10 @@ HomeBedding là một ứng dụng web thương mại điện tử hiện đại
 *Dưới đây là một số hình ảnh thực tế của ứng dụng:*
 
 ### 1. Trang chủ cửa hàng
-<!-- Bỏ ảnh chụp màn hình vào đây -->
-*(Chưa có hình ảnh)*
+![Trang chủ cửa hàng](docs/screenshots/home.png)
 
 ### 2. Giao diện Đăng Nhập / Đăng Ký chia ô
-<!-- Bỏ ảnh chụp màn hình vào đây -->
-*(Chưa có hình ảnh)*
+![Giao diện Đăng Nhập / Đăng Ký](docs/screenshots/login.png)
 
 ### 3. Trang Quản trị (Admin Dashboard)
-<!-- Bỏ ảnh chụp màn hình vào đây -->
-*(Chưa có hình ảnh)*
+![Trang Quản trị](docs/screenshots/admin.png)
