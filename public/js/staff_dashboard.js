@@ -789,6 +789,7 @@ async function showOrderDetail(id) {
         const addressStr = order.shippingAddress ? `${order.shippingAddress.detail}, ${order.shippingAddress.ward}, ${order.shippingAddress.district}, ${order.shippingAddress.province}` : '';
 
         // Generate Item HTML
+        let itemsHtml = order.items.map(item => {
             const rawItemImg = item.productImage;
             const itemImg = rawItemImg ? (rawItemImg.startsWith('http') ? rawItemImg : `${rawItemImg.startsWith('/') ? '' : '/'}${rawItemImg}`) : '../images/placeholder.jpg';
             return `

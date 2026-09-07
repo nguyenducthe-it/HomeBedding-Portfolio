@@ -162,6 +162,8 @@ async function fetchAdminOrders(filterStatus = 'active_all') {
             return;
         }
         
+        container.innerHTML = data.map(order => {
+            const productCount = order.items.length;
             const rawMainImg = order.items[0]?.productImage;
             const mainImage = rawMainImg ? (rawMainImg.startsWith('http') ? rawMainImg : `${rawMainImg.startsWith('/') ? '' : '/'}${rawMainImg}`) : '../images/placeholder.jpg';
             const mainProductName = order.items[0]?.productName || 'Sản phẩm';
@@ -222,7 +224,7 @@ async function showAdminOrderDetail(id) {
 
         const statusInfo = getOrderStatusDisplayAdmin(order.status);
         const addressStr = order.shippingAddress ? `${order.shippingAddress.detail}, ${order.shippingAddress.ward}, ${order.shippingAddress.district}, ${order.shippingAddress.province}` : '';
-
+        let itemsHtml = order.items.map(item => {
             const rawItemImg = item.productImage;
             const itemImg = rawItemImg ? (rawItemImg.startsWith('http') ? rawItemImg : `${rawItemImg.startsWith('/') ? '' : '/'}${rawItemImg}`) : '../images/placeholder.jpg';
             return `
