@@ -1,6 +1,10 @@
 require('dotenv').config();
 const dns = require('dns');
-dns.setServers(['8.8.8.8', '1.1.1.1']);
+try {
+    dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+    console.warn('DNS config notice:', e.message);
+}
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -24,8 +28,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public', 'pages')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Kết nối MongoDB
+// Cấu hình Port và mở lắng nghe ngay lập tức trên 0.0.0.0 (giúp Render nhận diện server Live ngay, không bị báo thoát sớm)
 const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server is running on port ${PORT}`);
+});
+
+// Kết nối MongoDB
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/homebedding';
 
 mongoose.connect(MONGO_URI)
@@ -33,14 +42,12 @@ mongoose.connect(MONGO_URI)
     console.log('✅ Connected to MongoDB successfully!');
     const initCronJobs = require('./utils/cronJobs');
     initCronJobs();
-    
-    // Bắt đầu chạy server sau khi kết nối DB thành công
-    app.listen(PORT, () => {
-        console.log(`🚀 Server is running on http://localhost:${PORT}`);
-    });
 })
 .catch((err) => {
     console.error('❌ Error connecting to MongoDB:', err.message);
+    if (!process.env.MONGO_URI || process.env.MONGO_URI.includes('127.0.0.1')) {
+        console.error('⚠️ LƯU Ý: Đang dùng MongoDB localhost. Nếu đang deploy lên Render/Koyeb, hãy thêm biến MONGO_URI (MongoDB Atlas) vào tab Environment!');
+    }
 });
 
 // Routes
