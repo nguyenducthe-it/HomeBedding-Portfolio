@@ -729,6 +729,7 @@ async function fetchStaffOrders(filterStatus = 'active_all') {
         }
         
         container.innerHTML = data.map(order => {
+            const productCount = order.items.length;
             const rawMainImg = order.items[0]?.productImage;
             const mainImage = rawMainImg ? (rawMainImg.startsWith('http') ? rawMainImg : `${rawMainImg.startsWith('/') ? '' : '/'}${rawMainImg}`) : '../images/placeholder.jpg';
             const mainProductName = order.items[0]?.productName || 'Sản phẩm';
