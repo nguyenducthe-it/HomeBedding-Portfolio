@@ -1,5 +1,5 @@
 // payment.js - Handle VietQR payment and customer confirmation
-const apiOrigin = (window.location.port === '3000') ? '' : 'http://localhost:3000';
+const apiOrigin = (['localhost', '127.0.0.1'].includes(window.location.hostname) && window.location.port !== '3000') ? 'http://localhost:3000' : '';
 let currentOrderId = null;
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -69,7 +69,7 @@ function renderPendingReviews() {
 
     let html = '';
     window.pendingReviewItems.forEach(item => {
-        const mainImage = item.productImage ? `http://localhost:3000${item.productImage}` : 'https://via.placeholder.com/100';
+        const mainImage = item.productImage ? `${item.productImage}` : 'https://via.placeholder.com/100';
         
         html += `
             <div style="display:flex; background:#fff; padding:20px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.05); align-items:center; gap:20px;">

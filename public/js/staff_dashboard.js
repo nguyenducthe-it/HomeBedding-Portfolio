@@ -729,8 +729,8 @@ async function fetchStaffOrders(filterStatus = 'active_all') {
         }
         
         container.innerHTML = data.map(order => {
-            const productCount = order.items.length;
-            const mainImage = order.items[0]?.productImage ? `http://localhost:3000${order.items[0].productImage}` : '../images/placeholder.jpg';
+            const rawMainImg = order.items[0]?.productImage;
+            const mainImage = rawMainImg ? (rawMainImg.startsWith('http') ? rawMainImg : `${rawMainImg.startsWith('/') ? '' : '/'}${rawMainImg}`) : '../images/placeholder.jpg';
             const mainProductName = order.items[0]?.productName || 'Sản phẩm';
             
             let paymentText = order.paymentMethod === 'online' ? 'VNPay/MoMo' : 'COD';
@@ -789,8 +789,8 @@ async function showOrderDetail(id) {
         const addressStr = order.shippingAddress ? `${order.shippingAddress.detail}, ${order.shippingAddress.ward}, ${order.shippingAddress.district}, ${order.shippingAddress.province}` : '';
 
         // Generate Item HTML
-        let itemsHtml = order.items.map(item => {
-            const itemImg = item.productImage ? `http://localhost:3000${item.productImage}` : '../images/placeholder.jpg';
+            const rawItemImg = item.productImage;
+            const itemImg = rawItemImg ? (rawItemImg.startsWith('http') ? rawItemImg : `${rawItemImg.startsWith('/') ? '' : '/'}${rawItemImg}`) : '../images/placeholder.jpg';
             return `
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
                     <img src="${itemImg}" alt="${item.productName}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #f0f0f0;">
@@ -1064,7 +1064,7 @@ async function fetchWeeklyScheduleStaff() {
     const endDate = weekDatesStaff[6];
 
     try {
-        const response = await fetch(`http://localhost:3000/api/attendance/week?startDate=${startDate}&endDate=${endDate}`);
+        const response = await fetch(`/api/attendance/week?startDate=${startDate}&endDate=${endDate}`);
         const data = await response.json();
         renderScheduleTableStaff(data.staffs || [], data.isLocked || false);
     } catch (err) {
@@ -1225,7 +1225,7 @@ async function toggleShiftStaff(userId, date, shiftId, isCurrentlyPending) {
         // Lấy lại data hiện tại của mình trong tuần đó để biết chính xác các ca đang chờ duyệt
         const startDate = weekDatesStaff[0];
         const endDate = weekDatesStaff[6];
-        const res = await fetch(`http://localhost:3000/api/attendance/week?startDate=${startDate}&endDate=${endDate}`);
+        const res = await fetch(`/api/attendance/week?startDate=${startDate}&endDate=${endDate}`);
         const data = await res.json();
         const me = data.staffs.find(s => s._id === userId);
         
@@ -1245,7 +1245,7 @@ async function toggleShiftStaff(userId, date, shiftId, isCurrentlyPending) {
         }
 
         const weekStartDate = weekDatesStaff[0]; // Truyền thêm ngày đầu tuần
-        const saveRes = await fetch('http://localhost:3000/api/attendance/request-schedule', {
+        const saveRes = await fetch('/api/attendance/request-schedule', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, date, shifts: newPending, weekStartDate })

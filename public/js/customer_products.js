@@ -579,7 +579,7 @@ function addToCart(id) {
         return;
     }
 
-    fetch('http://localhost:3000/api/cart/add', {
+    fetch('/api/cart/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: userId, productId: id, quantity: 1 })
@@ -626,7 +626,7 @@ window.addDetailToCart = function () {
         return;
     }
 
-    fetch('http://localhost:3000/api/cart/add', {
+    fetch('/api/cart/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: userId, productId: currentDetailProductId, quantity: qty })

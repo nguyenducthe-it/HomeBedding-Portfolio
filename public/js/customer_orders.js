@@ -32,7 +32,7 @@ async function loadCustomerOrders() {
         const resReviews = await fetch(`/api/reviews/user/${userId}`);
         const reviews = await resReviews.json();
 
-        const res = await fetch(`http://localhost:3000/api/orders/my-orders/${userId}`);
+        const res = await fetch(`/api/orders/my-orders/${userId}`);
         const data = await res.json();
 
         data.forEach(o => {
@@ -110,7 +110,7 @@ function renderCustomerOrders(orders) {
     let html = '';
     orders.forEach(order => {
         const productCount = order.items.length;
-        const mainImage = order.items[0]?.productImage ? `http://localhost:3000${order.items[0].productImage}` : '../images/placeholder.jpg';
+        const mainImage = order.items[0]?.productImage ? `${order.items[0].productImage}` : '../images/placeholder.jpg';
         const mainProductName = order.items[0]?.productName || 'Sản phẩm';
 
         let paymentText = order.paymentMethod === 'online' ? 'VNPay/MoMo' : 'COD';
@@ -168,7 +168,7 @@ window.goToReviews = function (orderId) {
             if (window.pendingReviewItems && typeof openReviewModal === 'function') {
                 const pendingItem = window.pendingReviewItems.find(p => p.orderId === orderId);
                 if (pendingItem) {
-                    const mainImg = pendingItem.productImage ? `http://localhost:3000${pendingItem.productImage}` : 'https://via.placeholder.com/100';
+                    const mainImg = pendingItem.productImage ? `${pendingItem.productImage}` : 'https://via.placeholder.com/100';
                     openReviewModal(pendingItem.orderId, pendingItem.productId, pendingItem.productName.replace(/'/g, "\\'"), mainImg);
                 }
             }
@@ -196,7 +196,7 @@ window.openOrderDetail = async function (orderId) {
     document.getElementById('modalOrderId').innerText = '#' + order._id.slice(-6).toUpperCase();
 
     let itemsHtml = order.items.map(item => {
-        let img = item.productImage ? `http://localhost:3000${item.productImage}` : '../images/placeholder.jpg';
+        let img = item.productImage ? `${item.productImage}` : '../images/placeholder.jpg';
         let reviewBtnHtml = '';
         if (order.status === 'completed') {
             let isReviewed = false;
@@ -337,7 +337,7 @@ window.buyAgain = async function (orderId) {
         quantity: i.quantity,
         price: i.price,
         name: i.productName,
-        image: i.productImage ? `http://localhost:3000${i.productImage}` : 'https://placehold.co/600x600/f0ebd8/7f866e?text=No+Image'
+        image: i.productImage ? `${i.productImage}` : 'https://placehold.co/600x600/f0ebd8/7f866e?text=No+Image'
     }));
 
     document.getElementById('checkoutName').value = order.customerName || '';
@@ -384,7 +384,7 @@ function cancelOrder(orderId) {
     document.getElementById('btnConfirmCancelOrder').onclick = async () => {
         document.getElementById('cancelOrderConfirmModal').style.display = 'none';
         try {
-            const res = await fetch(`http://localhost:3000/api/orders/${pendingCancelOrderId}/cancel`, {
+            const res = await fetch(`/api/orders/${pendingCancelOrderId}/cancel`, {
                 method: 'PUT'
             });
             const data = await res.json();
@@ -559,7 +559,7 @@ function promptEditAddress(orderId) {
 
 async function updateOrderAddress(orderId, payload) {
     try {
-        const res = await fetch(`http://localhost:3000/api/orders/${orderId}/address`, {
+        const res = await fetch(`/api/orders/${orderId}/address`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)

@@ -66,7 +66,7 @@ async function fetchCart() {
     const userId = localStorage.getItem('userId');
     if (!userId) return;
     try {
-        const res = await fetch(`http://localhost:3000/api/cart/${userId}`);
+        const res = await fetch(`/api/cart/${userId}`);
         const cart = await res.json();
         // Lọc bỏ những sản phẩm đã bị xóa khỏi hệ thống (productId bị null)
         cartItemsData = (cart.items || []).filter(item => item.productId);
@@ -153,7 +153,7 @@ async function updateCartItemQty(productId, change) {
     updateSummary();
 
     try {
-        const res = await fetch(`http://localhost:3000/api/cart/update`, {
+        const res = await fetch(`/api/cart/update`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: userId, productId, quantity: newQty })
@@ -225,7 +225,7 @@ window.closeAlertModal = function() {
 async function performRemoveCartItem(productId) {
     const userId = localStorage.getItem('userId');
     try {
-        const res = await fetch(`http://localhost:3000/api/cart/remove`, {
+        const res = await fetch(`/api/cart/remove`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: userId, productId })
@@ -309,7 +309,7 @@ async function autoFillCheckout() {
     const userId = localStorage.getItem('userId');
     if (!userId) return;
     try {
-        const res = await fetch(`http://localhost:3000/api/users/profile/${userId}`);
+        const res = await fetch(`/api/users/profile/${userId}`);
         const profile = await res.json();
         document.getElementById('checkoutName').value = profile.fullName || '';
         document.getElementById('checkoutPhone').value = profile.phone || '';
@@ -327,7 +327,7 @@ async function loadSavedAddressesForCheckout() {
     if (!container) return;
 
     try {
-        const res = await fetch(`http://localhost:3000/api/users/profile/${userId}`);
+        const res = await fetch(`/api/users/profile/${userId}`);
         const profile = await res.json();
         const addresses = profile.addresses || [];
 
@@ -403,7 +403,7 @@ async function applyPromoCode() {
     if (!code) return;
 
     try {
-        const res = await fetch('http://localhost:3000/api/promotions/all');
+        const res = await fetch('/api/promotions/all');
         const promos = await res.json();
         const promo = promos.find(p => p.code === code.toUpperCase());
         if (promo && promo.isActive && (!promo.maxUses || promo.usedCount < promo.maxUses)) {
@@ -501,7 +501,7 @@ document.getElementById('checkoutForm').addEventListener('submit', async functio
     };
 
     try {
-        const res = await fetch('http://localhost:3000/api/orders/place', {
+        const res = await fetch('/api/orders/place', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData)
@@ -509,7 +509,7 @@ document.getElementById('checkoutForm').addEventListener('submit', async functio
         if (res.ok) {
             const data = await res.json();
             // Update lại default address cho user
-            await fetch(`http://localhost:3000/api/users/profile/${userId}`, {
+            await fetch(`/api/users/profile/${userId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ address: shippingAddress })

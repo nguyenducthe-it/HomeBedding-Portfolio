@@ -162,9 +162,8 @@ async function fetchAdminOrders(filterStatus = 'active_all') {
             return;
         }
         
-        container.innerHTML = data.map(order => {
-            const productCount = order.items.length;
-            const mainImage = order.items[0]?.productImage ? `http://localhost:3000${order.items[0].productImage}` : '../images/placeholder.jpg';
+            const rawMainImg = order.items[0]?.productImage;
+            const mainImage = rawMainImg ? (rawMainImg.startsWith('http') ? rawMainImg : `${rawMainImg.startsWith('/') ? '' : '/'}${rawMainImg}`) : '../images/placeholder.jpg';
             const mainProductName = order.items[0]?.productName || 'Sản phẩm';
             
             let paymentText = order.paymentMethod === 'online' ? 'VNPay/MoMo' : 'COD';
@@ -224,9 +223,8 @@ async function showAdminOrderDetail(id) {
         const statusInfo = getOrderStatusDisplayAdmin(order.status);
         const addressStr = order.shippingAddress ? `${order.shippingAddress.detail}, ${order.shippingAddress.ward}, ${order.shippingAddress.district}, ${order.shippingAddress.province}` : '';
 
-        // Tạo danh sách sản phẩm trong modal
-        let itemsHtml = order.items.map(item => {
-            const itemImg = item.productImage ? `http://localhost:3000${item.productImage}` : '../images/placeholder.jpg';
+            const rawItemImg = item.productImage;
+            const itemImg = rawItemImg ? (rawItemImg.startsWith('http') ? rawItemImg : `${rawItemImg.startsWith('/') ? '' : '/'}${rawItemImg}`) : '../images/placeholder.jpg';
             return `
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
                     <img src="${itemImg}" alt="${item.productName}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #f0f0f0;">

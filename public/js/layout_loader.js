@@ -801,8 +801,8 @@
             return;
         }
 
-        // Tự động xác định base URL của API (nếu chạy qua file:// hoặc cổng khác thì hướng về cổng 3000)
-        const apiOrigin = (window.location.port === '3000') ? '' : 'http://localhost:3000';
+        // Tự động xác định base URL của API
+        const apiOrigin = (['localhost', '127.0.0.1'].includes(window.location.hostname) && window.location.port !== '3000') ? 'http://localhost:3000' : '';
         const apiUrl = `${apiOrigin}/api/support-requests`;
 
         try {
